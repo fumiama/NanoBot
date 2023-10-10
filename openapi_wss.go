@@ -9,10 +9,7 @@ func (bot *Bot) GetGeneralWSSGateway() (string, error) {
 		U string `json:"url"`
 	}{}
 	err := bot.GetOpenAPI("/gateway", &resp)
-	if err != nil {
-		return "", err
-	}
-	return resp.U, nil
+	return resp.U, err
 }
 
 // ShardWSSGateway 带分片 WSS 接入点响应数据

@@ -20,7 +20,7 @@ type Guild struct {
 // GuildArray []Guild 的别名
 type GuildArray []Guild
 
-// GetGuildByID 获取 id 指定的频道的详情
+// GetGuildByID 获取 guild_id 指定的频道的详情
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/get_guild.html
 func (bot *Bot) GetGuildByID(id string) (*Guild, error) {

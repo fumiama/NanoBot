@@ -27,9 +27,26 @@ func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
-	respbbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbbase.C)+", msg: "+respbbase.M), getCallerFuncName())
+	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
+	if respbase.C != 0 {
+		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
+	}
+	return nil
+}
+
+// DeleteOpenAPI 向 ep 发送 DELETE 请求
+func (bot *Bot) DeleteOpenAPI(ep string) error {
+	req, err := NewHTTPEndpointDeleteRequestWithAuth(ep, bot.Authorization())
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
 	return nil
 }
@@ -51,9 +68,33 @@ func (bot *Bot) PostOpenAPI(ep string, ptr any, body io.Reader) error {
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
-	respbbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbbase.C)+", msg: "+respbbase.M), getCallerFuncName())
+	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
+	if respbase.C != 0 {
+		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
+	}
+	return nil
+}
+
+//go:generate go run codegen/patchopenapiof/main.go Channel
+
+// PatchOpenAPI 从 ep 得到 json 结构化数据返回值写到 ptr, ptr 必须在开头继承 CodeMessageBase
+func (bot *Bot) PatchOpenAPI(ep string, ptr any, body io.Reader) error {
+	req, err := NewHTTPEndpointPatchRequestWithAuth(ep, bot.Authorization(), body)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	defer resp.Body.Close()
+	err = json.NewDecoder(resp.Body).Decode(ptr)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
+	if respbase.C != 0 {
+		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
 	}
 	return nil
 }
