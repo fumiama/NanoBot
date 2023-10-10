@@ -47,19 +47,6 @@ func (bot *Bot) getOpenAPIofGuild(ep string) (*Guild, error) {
 	return (*Guild)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
 }
 
-func (bot *Bot) getOpenAPIofGuildArray(ep string) (*GuildArray, error) {
-	resp := &struct {
-		CodeMessageBase
-		GuildArray
-	}{}
-	err := bot.GetOpenAPI(ep, resp)
-	if err != nil {
-		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
-	}
-	return (*GuildArray)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
-}
-
 func (bot *Bot) getOpenAPIofChannel(ep string) (*Channel, error) {
 	resp := &struct {
 		CodeMessageBase
@@ -71,17 +58,4 @@ func (bot *Bot) getOpenAPIofChannel(ep string) (*Channel, error) {
 		return nil, err
 	}
 	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
-}
-
-func (bot *Bot) getOpenAPIofChannelArray(ep string) (*ChannelArray, error) {
-	resp := &struct {
-		CodeMessageBase
-		ChannelArray
-	}{}
-	err := bot.GetOpenAPI(ep, resp)
-	if err != nil {
-		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
-	}
-	return (*ChannelArray)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
 }

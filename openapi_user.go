@@ -22,10 +22,11 @@ func (bot *Bot) GetMe() (*User, error) {
 // GetMyGuilds 获取当前用户（机器人）频道列表，支持分页
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/user/guilds.html
-func (bot *Bot) GetMyGuilds(before, after string, limit int) (*GuildArray, error) {
-	return bot.getOpenAPIofGuildArray(WriteHTTPQueryIfNotNil("/users/@me/guilds",
+func (bot *Bot) GetMyGuilds(before, after string, limit int) (guilds []Guild, err error) {
+	err = bot.GetOpenAPI(WriteHTTPQueryIfNotNil("/users/@me/guilds",
 		"before", before,
 		"after", after,
 		"limit", limit,
-	))
+	), &guilds)
+	return
 }

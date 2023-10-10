@@ -60,14 +60,12 @@ type Channel struct {
 	Permissions     string          `json:"permissions"`
 }
 
-// ChannelArray []Channel 的别名
-type ChannelArray []Channel
-
 // GetChannelsOfGuild 获取 guild_id 指定的频道下的子频道列表
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/get_channels.html
-func (bot *Bot) GetChannelsOfGuild(id string) (*ChannelArray, error) {
-	return bot.getOpenAPIofChannelArray("/guilds/" + id + "/channels")
+func (bot *Bot) GetChannelsOfGuild(id string) (channels []Channel, err error) {
+	err = bot.GetOpenAPI("/guilds/"+id+"/channels", &channels)
+	return
 }
 
 // GetChannelByID 用于获取 channel_id 指定的子频道的详情
