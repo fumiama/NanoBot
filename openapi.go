@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel
+//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
@@ -24,6 +24,9 @@ func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
 		return errors.Wrap(err, getCallerFuncName())
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNoContent {
+		return nil
+	}
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
@@ -45,8 +48,8 @@ func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
 }
 
 // DeleteOpenAPI 向 ep 发送 DELETE 请求
-func (bot *Bot) DeleteOpenAPI(ep string) error {
-	req, err := NewHTTPEndpointDeleteRequestWithAuth(ep, bot.Authorization())
+func (bot *Bot) DeleteOpenAPI(ep string, body io.Reader) error {
+	req, err := NewHTTPEndpointDeleteRequestWithAuth(ep, bot.Authorization(), body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
@@ -55,6 +58,9 @@ func (bot *Bot) DeleteOpenAPI(ep string) error {
 		return errors.Wrap(err, getCallerFuncName())
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNoContent {
+		return nil
+	}
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
@@ -74,6 +80,9 @@ func (bot *Bot) PostOpenAPI(ep string, ptr any, body io.Reader) error {
 		return errors.Wrap(err, getCallerFuncName())
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNoContent {
+		return nil
+	}
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
@@ -107,6 +116,9 @@ func (bot *Bot) PatchOpenAPI(ep string, ptr any, body io.Reader) error {
 		return errors.Wrap(err, getCallerFuncName())
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNoContent {
+		return nil
+	}
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}

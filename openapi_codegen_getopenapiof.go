@@ -59,3 +59,29 @@ func (bot *Bot) getOpenAPIofChannel(ep string) (*Channel, error) {
 	}
 	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
 }
+
+func (bot *Bot) getOpenAPIofMember(ep string) (*Member, error) {
+	resp := &struct {
+		CodeMessageBase
+		Member
+	}{}
+	err := bot.GetOpenAPI(ep, resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+		return nil, err
+	}
+	return (*Member)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+}
+
+func (bot *Bot) getOpenAPIofRoleMembers(ep string) (*RoleMembers, error) {
+	resp := &struct {
+		CodeMessageBase
+		RoleMembers
+	}{}
+	err := bot.GetOpenAPI(ep, resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+		return nil, err
+	}
+	return (*RoleMembers)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+}

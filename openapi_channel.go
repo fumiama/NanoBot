@@ -120,7 +120,7 @@ func (bot *Bot) PatchChannel(id string, config *ChannelPatch) (*Channel, error) 
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/delete_channel.html
 func (bot *Bot) DeleteChannel(id string) error {
-	return bot.DeleteOpenAPI("/channels/" + id)
+	return bot.DeleteOpenAPI("/channels/"+id, nil)
 }
 
 // GetOnlineNumsInChannel 查询音视频/直播子频道 channel_id 的在线成员数

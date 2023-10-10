@@ -22,8 +22,8 @@ func NewHTTPEndpointGetRequestWithAuth(ep string, auth string) (req *http.Reques
 }
 
 // NewHTTPEndpointDeleteRequestWithAuth 新建带鉴权头的 HTTP DELETE 请求
-func NewHTTPEndpointDeleteRequestWithAuth(ep string, auth string) (req *http.Request, err error) {
-	req, err = http.NewRequest("DELETE", StandardAPI+ep, nil)
+func NewHTTPEndpointDeleteRequestWithAuth(ep string, auth string, body io.Reader) (req *http.Request, err error) {
+	req, err = http.NewRequest("DELETE", StandardAPI+ep, body)
 	if err != nil {
 		return
 	}
