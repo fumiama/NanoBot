@@ -19,7 +19,7 @@ type Member struct {
 // GetGuildMembers 获取 guild_id 指定的频道中所有成员的详情列表，支持分页
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/get_members.html
-func (bot *Bot) GetGuildMembers(id, after string, limit int) (members []Member, err error) {
+func (bot *Bot) GetGuildMembers(id, after string, limit uint32) (members []Member, err error) {
 	err = bot.GetOpenAPI(WriteHTTPQueryIfNotNil("/guilds/"+id+"/members",
 		"after", after,
 		"limit", limit,
@@ -38,7 +38,7 @@ type RoleMembers struct {
 // GetRoleMembers 获取 guild_id 频道中指定role_id身份组下所有成员的详情列表，支持分页
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/get_role_members.html
-func (bot *Bot) GetRoleMembers(guildid, roleid, startindex string, limit int) (*RoleMembers, error) {
+func (bot *Bot) GetRoleMembers(guildid, roleid, startindex string, limit uint32) (*RoleMembers, error) {
 	return bot.getOpenAPIofRoleMembers(WriteHTTPQueryIfNotNil("/guilds/"+guildid+"/roles/"+roleid+"/members",
 		"start_index", startindex,
 		"limit", limit,

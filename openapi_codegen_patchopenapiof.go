@@ -21,3 +21,16 @@ func (bot *Bot) patchOpenAPIofChannel(ep string, body io.Reader) (*Channel, erro
 	}
 	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
 }
+
+func (bot *Bot) patchOpenAPIofGuildRolePatch(ep string, body io.Reader) (*GuildRolePatch, error) {
+	resp := &struct {
+		CodeMessageBase
+		GuildRolePatch
+	}{}
+	err := bot.PatchOpenAPI(ep, resp, body)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+		return nil, err
+	}
+	return (*GuildRolePatch)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+}

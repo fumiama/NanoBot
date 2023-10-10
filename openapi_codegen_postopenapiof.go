@@ -21,3 +21,16 @@ func (bot *Bot) postOpenAPIofChannel(ep string, body io.Reader) (*Channel, error
 	}
 	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
 }
+
+func (bot *Bot) postOpenAPIofGuildRoleCreate(ep string, body io.Reader) (*GuildRoleCreate, error) {
+	resp := &struct {
+		CodeMessageBase
+		GuildRoleCreate
+	}{}
+	err := bot.PostOpenAPI(ep, resp, body)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+		return nil, err
+	}
+	return (*GuildRoleCreate)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+}

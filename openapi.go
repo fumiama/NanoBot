@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers
+//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
@@ -67,7 +67,7 @@ func (bot *Bot) DeleteOpenAPI(ep string, body io.Reader) error {
 	return nil
 }
 
-//go:generate go run codegen/postopenapiof/main.go Channel
+//go:generate go run codegen/postopenapiof/main.go Channel GuildRoleCreate
 
 // PostOpenAPI 从 ep 得到 json 结构化数据返回值写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) PostOpenAPI(ep string, ptr any, body io.Reader) error {
@@ -103,7 +103,7 @@ func (bot *Bot) PostOpenAPI(ep string, ptr any, body io.Reader) error {
 	return nil
 }
 
-//go:generate go run codegen/patchopenapiof/main.go Channel
+//go:generate go run codegen/patchopenapiof/main.go Channel GuildRolePatch
 
 // PatchOpenAPI 从 ep 得到 json 结构化数据返回值写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) PatchOpenAPI(ep string, ptr any, body io.Reader) error {

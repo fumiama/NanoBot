@@ -85,3 +85,16 @@ func (bot *Bot) getOpenAPIofRoleMembers(ep string) (*RoleMembers, error) {
 	}
 	return (*RoleMembers)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
 }
+
+func (bot *Bot) getOpenAPIofGuildRoleList(ep string) (*GuildRoleList, error) {
+	resp := &struct {
+		CodeMessageBase
+		GuildRoleList
+	}{}
+	err := bot.GetOpenAPI(ep, resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+		return nil, err
+	}
+	return (*GuildRoleList)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+}
