@@ -21,6 +21,16 @@ func NewHTTPEndpointGetRequestWithAuth(ep string, auth string) (req *http.Reques
 	return
 }
 
+// NewHTTPEndpointPutRequestWithAuth 新建带鉴权头的 HTTP PUT 请求
+func NewHTTPEndpointPutRequestWithAuth(ep string, auth string, body io.Reader) (req *http.Request, err error) {
+	req, err = http.NewRequest("PUT", StandardAPI+ep, body)
+	if err != nil {
+		return
+	}
+	req.Header.Add("Authorization", auth)
+	return
+}
+
 // NewHTTPEndpointDeleteRequestWithAuth 新建带鉴权头的 HTTP DELETE 请求
 func NewHTTPEndpointDeleteRequestWithAuth(ep string, auth string, body io.Reader) (req *http.Request, err error) {
 	req, err = http.NewRequest("DELETE", StandardAPI+ep, body)

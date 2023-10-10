@@ -1,5 +1,21 @@
 package nano
 
+import (
+	"errors"
+	"io"
+)
+
+const (
+	RoleIDAll          = "1" // 全体成员
+	RoleIDAdmin        = "2" // 管理员
+	RoleIDCreater      = "4" // 群主/创建者
+	RoleIDChannelAdmin = "5" // 子频道管理员
+)
+
+var (
+	ErrMustGiveChannelID = errors.New("must give channel_id")
+)
+
 // Role 频道身份组对象
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/role_model.html
@@ -71,4 +87,55 @@ func (bot *Bot) PatchGuildRole(guildid, roleid string, name string, color uint32
 
 func (bot *Bot) DeleteGuildRole(guildid, roleid string) error {
 	return bot.DeleteOpenAPI("/guilds/"+guildid+"/roles/"+roleid, nil)
+}
+
+// GuildRoleChannelID 频道身份组成员返回 只填充了子频道 id 字段的对象
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/put_guild_member_role.html#%E5%8F%82%E6%95%B0
+type GuildRoleChannelID struct {
+	Channel struct {
+		ID string `json:"id"`
+	} `json:"channel"`
+}
+
+// AddRoleToMember 将频道guild_id下的用户 user_id 添加到身份组 role_id
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/put_guild_member_role.html
+//
+// 返回 channel_id
+func (bot *Bot) AddRoleToMember(guildid, userid, roleid, channelid string) (string, error) {
+	var body io.Reader
+	if roleid == RoleIDChannelAdmin {
+		if channelid == "" {
+			return "", ErrMustGiveChannelID
+		}
+		body = WriteBodyFromJSON(&GuildRoleChannelID{
+			Channel: struct {
+				ID string `json:"id"`
+			}{channelid},
+		})
+	}
+	r, err := bot.putOpenAPIofGuildRoleChannelID("/guilds/"+guildid+"/members/"+userid+"/roles/"+roleid, body)
+	if err != nil {
+		return "", err
+	}
+	return r.Channel.ID, nil
+}
+
+// RemoveRoleFromMember 将用户 user_id 从 频道 guild_id 的 role_id 身份组中移除
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/delete_guild_member_role.html
+func (bot *Bot) RemoveRoleFromMember(guildid, userid, roleid, channelid string) error {
+	var body io.Reader
+	if roleid == RoleIDChannelAdmin {
+		if channelid == "" {
+			return ErrMustGiveChannelID
+		}
+		body = WriteBodyFromJSON(&GuildRoleChannelID{
+			Channel: struct {
+				ID string `json:"id"`
+			}{channelid},
+		})
+	}
+	return bot.DeleteOpenAPI("/guilds/"+guildid+"/members/"+userid+"/roles/"+roleid, body)
 }
