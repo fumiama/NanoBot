@@ -1,16 +1,29 @@
 package nano
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
 )
 
-// NewHTTPEndpointGetRequestWithAuth 新建带鉴权头的 HTTP 请求
+// NewHTTPEndpointGetRequestWithAuth 新建带鉴权头的 HTTP GET 请求
 func NewHTTPEndpointGetRequestWithAuth(ep string, auth string) (req *http.Request, err error) {
 	req, err = http.NewRequest("GET", StandardAPI+ep, nil)
+	if err != nil {
+		return
+	}
+	req.Header.Add("Authorization", auth)
+	return
+}
+
+// NewHTTPEndpointPostRequestWithAuth 新建带鉴权头的 HTTP POST 请求
+func NewHTTPEndpointPostRequestWithAuth(ep string, auth string, body io.Reader) (req *http.Request, err error) {
+	req, err = http.NewRequest("POST", StandardAPI+ep, body)
 	if err != nil {
 		return
 	}
@@ -50,4 +63,11 @@ func WriteHTTPQueryIfNotNil(baseurl string, queries ...any) string {
 		return baseurl
 	}
 	return sb.String()[:sb.Len()-1]
+}
+
+// WritePostBodyFromJSON 从 json 结构体 ptr 写入 bytes.Buffer, 忽略 error (内部使用不会出错)
+func WritePostBodyFromJSON(ptr any) *bytes.Buffer {
+	buf := bytes.NewBuffer(make([]byte, 0, 1024))
+	_ = json.NewEncoder(buf).Encode(ptr)
+	return buf
 }

@@ -34,3 +34,17 @@ func (bot *Bot) GetChannelsOfGuild(id string) (*ChannelArray, error) {
 func (bot *Bot) GetChannelByID(id string) (*Channel, error) {
 	return bot.getOpenAPIofChannel("/channels/" + id)
 }
+
+// ChannelPost 子频道 post 操作所用对象
+type ChannelPost struct {
+	Name            string   `json:"name"`
+	Type            int      `json:"type"`
+	SubType         int      `json:"sub_type"`
+	Position        int      `json:"position"`
+	ParentID        string   `json:"parent_id"`
+	OwnerID         string   `json:"owner_id,omitempty"`
+	PrivateType     int      `json:"private_type"`
+	PrivateUserIds  []string `json:"private_user_ids,omitempty"`
+	SpeakPermission int      `json:"speak_permission,omitempty"`
+	ApplicationID   string   `json:"application_id,omitempty"`
+}
