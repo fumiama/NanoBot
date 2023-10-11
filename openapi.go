@@ -11,6 +11,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+func checkrespbaseunsafe(ptr any) error {
+	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
+	if respbase.C != 0 {
+		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
+	}
+	return nil
+}
+
 //go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
@@ -40,11 +48,7 @@ func (bot *Bot) GetOpenAPI(ep, contenttype string, ptr any) error {
 	if reflect.ValueOf(ptr).Elem().Kind() == reflect.Slice {
 		return nil
 	}
-	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
-	}
-	return nil
+	return checkrespbaseunsafe(ptr)
 }
 
 //go:generate go run codegen/putopenapiof/main.go GuildRoleChannelID
@@ -76,11 +80,7 @@ func (bot *Bot) PutOpenAPI(ep, contenttype string, ptr any, body io.Reader) erro
 	if reflect.ValueOf(ptr).Elem().Kind() == reflect.Slice {
 		return nil
 	}
-	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
-	}
-	return nil
+	return checkrespbaseunsafe(ptr)
 }
 
 // DeleteOpenAPI 向 ep 发送 DELETE 请求
@@ -132,11 +132,7 @@ func (bot *Bot) PostOpenAPI(ep, contenttype string, ptr any, body io.Reader) err
 	if reflect.ValueOf(ptr).Elem().Kind() == reflect.Slice {
 		return nil
 	}
-	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
-	}
-	return nil
+	return checkrespbaseunsafe(ptr)
 }
 
 //go:generate go run codegen/patchopenapiof/main.go Channel GuildRolePatch
@@ -168,9 +164,5 @@ func (bot *Bot) PatchOpenAPI(ep, contenttype string, ptr any, body io.Reader) er
 	if reflect.ValueOf(ptr).Elem().Kind() == reflect.Slice {
 		return nil
 	}
-	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
-	}
-	return nil
+	return checkrespbaseunsafe(ptr)
 }
