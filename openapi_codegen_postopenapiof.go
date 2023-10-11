@@ -43,3 +43,15 @@ func (bot *Bot) postOpenAPIofMessage(ep, contenttype string, body io.Reader) (*M
 	}
 	return &resp.Message, err
 }
+
+func (bot *Bot) postOpenAPIofDMS(ep, contenttype string, body io.Reader) (*DMS, error) {
+	resp := &struct {
+		CodeMessageBase
+		DMS
+	}{}
+	err := bot.PostOpenAPI(ep, contenttype, resp, body)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return &resp.DMS, err
+}

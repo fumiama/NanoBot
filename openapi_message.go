@@ -3,7 +3,6 @@ package nano
 import (
 	"encoding/json"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -126,32 +125,9 @@ type MessagePost struct {
 	KeyBoard         *MessageKeyboard  `json:"keyboard,omitempty"`
 }
 
-// MessageEscape 消息转义
-//
-// https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html
-func MessageEscape(text string) string {
-	text = strings.ReplaceAll(text, "&", "&amp;")
-	text = strings.ReplaceAll(text, "<", "&lt;")
-	text = strings.ReplaceAll(text, ">", "&gt;")
-	return text
-}
-
-// MessageUnescape 消息解转义
-//
-// https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html
-func MessageUnescape(text string) string {
-	text = strings.ReplaceAll(text, "&amp;", "&")
-	text = strings.ReplaceAll(text, "&lt;", "<")
-	text = strings.ReplaceAll(text, "&gt;", ">")
-	return text
-}
-
-// PostMessageToChannel 向 channel_id 指定的子频道发送消息
-//
-// https://bot.q.qq.com/wiki/develop/api/openapi/message/post_messages.html
-func (bot *Bot) PostMessageToChannel(id string, content *MessagePost) (*Message, error) {
+func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error) {
 	if content.ImageFile == "" {
-		return bot.postOpenAPIofMessage("/channels/"+id+"/messages", "", WriteBodyFromJSON(content))
+		return bot.postOpenAPIofMessage(ep, "", WriteBodyFromJSON(content))
 	}
 	x := reflect.ValueOf(content).Elem()
 	t := x.Type()
@@ -183,7 +159,14 @@ func (bot *Bot) PostMessageToChannel(id string, content *MessagePost) (*Message,
 	if err != nil {
 		return nil, errors.Wrap(err, getThisFuncName())
 	}
-	return bot.postOpenAPIofMessage("/channels/"+id+"/messages", contenttype, body)
+	return bot.postOpenAPIofMessage(ep, contenttype, body)
+}
+
+// PostMessageToChannel 向 channel_id 指定的子频道发送消息
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/message/post_messages.html
+func (bot *Bot) PostMessageToChannel(id string, content *MessagePost) (*Message, error) {
+	return bot.postMessageTo("/channels/"+id+"/messages", content)
 }
 
 // DeleteMessageInChannel 回子频道 channel_id 下的消息 message_id

@@ -27,3 +27,23 @@ func getThisFuncName() string {
 func getCallerFuncName() string {
 	return getFuncNameWithSkip(2)
 }
+
+// MessageEscape 消息转义
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html
+func MessageEscape(text string) string {
+	text = strings.ReplaceAll(text, "&", "&amp;")
+	text = strings.ReplaceAll(text, "<", "&lt;")
+	text = strings.ReplaceAll(text, ">", "&gt;")
+	return text
+}
+
+// MessageUnescape 消息解转义
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html
+func MessageUnescape(text string) string {
+	text = strings.ReplaceAll(text, "&amp;", "&")
+	text = strings.ReplaceAll(text, "&lt;", "<")
+	text = strings.ReplaceAll(text, "&gt;", ">")
+	return text
+}

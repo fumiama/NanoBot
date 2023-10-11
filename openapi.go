@@ -103,7 +103,7 @@ func (bot *Bot) DeleteOpenAPI(ep, contenttype string, body io.Reader) error {
 	return nil
 }
 
-//go:generate go run codegen/postopenapiof/main.go Channel GuildRoleCreate Message
+//go:generate go run codegen/postopenapiof/main.go Channel GuildRoleCreate Message DMS
 
 // PostOpenAPI 从 ep 得到 json 结构化数据返回值写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) PostOpenAPI(ep, contenttype string, ptr any, body io.Reader) error {
