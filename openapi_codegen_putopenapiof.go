@@ -19,3 +19,15 @@ func (bot *Bot) putOpenAPIofGuildRoleChannelID(ep string, body io.Reader) (*Guil
 	}
 	return &resp.GuildRoleChannelID, err
 }
+
+func (bot *Bot) putOpenAPIofPinsMessage(ep string, body io.Reader) (*PinsMessage, error) {
+	resp := &struct {
+		CodeMessageBase
+		PinsMessage
+	}{}
+	err := bot.PutOpenAPI(ep, "", resp, body)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return &resp.PinsMessage, err
+}

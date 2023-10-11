@@ -19,7 +19,7 @@ func checkrespbaseunsafe(ptr any) error {
 	return nil
 }
 
-//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message MessageSetting
+//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message MessageSetting PinsMessage
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) GetOpenAPI(ep, contenttype string, ptr any) error {
@@ -51,7 +51,7 @@ func (bot *Bot) GetOpenAPI(ep, contenttype string, ptr any) error {
 	return checkrespbaseunsafe(ptr)
 }
 
-//go:generate go run codegen/putopenapiof/main.go GuildRoleChannelID
+//go:generate go run codegen/putopenapiof/main.go GuildRoleChannelID PinsMessage
 
 // PutOpenAPI 向 ep 发送 PUT 并获取 json 结构化数据返回写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) PutOpenAPI(ep, contenttype string, ptr any, body io.Reader) error {

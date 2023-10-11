@@ -125,3 +125,15 @@ func (bot *Bot) getOpenAPIofMessageSetting(ep string) (*MessageSetting, error) {
 	}
 	return &resp.MessageSetting, err
 }
+
+func (bot *Bot) getOpenAPIofPinsMessage(ep string) (*PinsMessage, error) {
+	resp := &struct {
+		CodeMessageBase
+		PinsMessage
+	}{}
+	err := bot.GetOpenAPI(ep, "", resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return &resp.PinsMessage, err
+}

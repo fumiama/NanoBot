@@ -86,7 +86,7 @@ type ChannelPost struct {
 	ParentID        string          `json:"parent_id"`
 	OwnerID         string          `json:"owner_id,omitempty"`
 	PrivateType     PrivateType     `json:"private_type"`
-	PrivateUserIds  []string        `json:"private_user_ids,omitempty"`
+	PrivateUserIDs  []string        `json:"private_user_ids,omitempty"`
 	SpeakPermission SpeakPermission `json:"speak_permission,omitempty"`
 	ApplicationID   string          `json:"application_id,omitempty"`
 }
