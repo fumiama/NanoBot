@@ -115,8 +115,8 @@ func (bot *Bot) GetMessageFromChannel(messageid, channelid string) (*Message, er
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/post_messages.html#%E9%80%9A%E7%94%A8%E5%8F%82%E6%95%B0
 type MessagePost struct {
 	Content          string            `json:"content,omitempty"`
-	Embed            *MessageEmbed     `json:"embed,omitempty"`
-	Ark              *MessageArk       `json:"ark,omitempty"`
+	Embed            *MessageEmbed     `json:"embed,omitempty"` // https://bot.q.qq.com/wiki/develop/api/openapi/message/template/embed_message.html
+	Ark              *MessageArk       `json:"ark,omitempty"`   // https://bot.q.qq.com/wiki/develop/api/openapi/message/message_template.html
 	MessageReference *MessageReference `json:"message_reference,omitempty"`
 	Image            string            `json:"image,omitempty"`
 	ImageFile        string            `json:"-"` // ImageFile 为图片路径 file:/// or base64:// or base16384:// , 与 Image 参数二选一, 优先 Image
@@ -193,4 +193,21 @@ func (bot *Bot) DeleteMessageInChannel(channelid, messageid string, hidetip bool
 	return bot.DeleteOpenAPI(WriteHTTPQueryIfNotNil("/channels/"+channelid+"/messages/"+messageid,
 		"hidetip", hidetip,
 	), "", nil)
+}
+
+// MessageSetting 频道消息频率设置对象
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/setting/model.html
+type MessageSetting struct {
+	DisableCreateDm   bool     `json:"disable_create_dm"`
+	DisablePushMsg    bool     `json:"disable_push_msg"`
+	ChannelIDs        []string `json:"channel_ids"`
+	ChannelPushMaxNum uint32   `json:"channel_push_max_num"`
+}
+
+// GetGuildMessageSetting 获取机器人在频道 guild_id 内的消息频率设置
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/setting/message_setting.html
+func (bot *Bot) GetGuildMessageSetting(id string) (*MessageSetting, error) {
+	return bot.getOpenAPIofMessageSetting("/guilds/" + id + "/message/setting")
 }

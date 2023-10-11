@@ -113,3 +113,15 @@ func (bot *Bot) getOpenAPIofMessage(ep string) (*Message, error) {
 	}
 	return &resp.Message, err
 }
+
+func (bot *Bot) getOpenAPIofMessageSetting(ep string) (*MessageSetting, error) {
+	resp := &struct {
+		CodeMessageBase
+		MessageSetting
+	}{}
+	err := bot.GetOpenAPI(ep, "", resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return &resp.MessageSetting, err
+}
