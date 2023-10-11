@@ -7,7 +7,7 @@ import "time"
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/model.html
 type Member struct {
 	GuildID  string    `json:"guild_id"` // MemberWithGuildID only
-	User     User      `json:"user"`
+	User     *User     `json:"user"`
 	Nick     string    `json:"nick"`
 	Roles    []string  `json:"roles"`
 	JoinedAt time.Time `json:"joined_at"`

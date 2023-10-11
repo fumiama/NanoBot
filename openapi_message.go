@@ -3,6 +3,7 @@ package nano
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -23,13 +24,13 @@ type Message struct {
 	Timestamp        time.Time           `json:"timestamp"`
 	EditedTimestamp  time.Time           `json:"edited_timestamp"`
 	MentionEveryone  bool                `json:"mention_everyone"`
-	Author           User                `json:"author"`
+	Author           *User               `json:"author"`
 	Attachments      []MessageAttachment `json:"attachments"`
 	Embeds           []MessageEmbed      `json:"embeds"`
-	Member           Member              `json:"member"`
-	Ark              MessageArk          `json:"ark"`
+	Member           *Member             `json:"member"`
+	Ark              *MessageArk         `json:"ark"`
 	SeqInChannel     string              `json:"seq_in_channel"`
-	MessageReference MessageReference    `json:"message_reference"`
+	MessageReference *MessageReference   `json:"message_reference"`
 	SrcGuildID       string              `json:"src_guild_id"`
 	Data             *struct {
 		MessageAudit *MessageAudited `json:"message_audit,omitempty"`
@@ -38,10 +39,10 @@ type Message struct {
 
 // MessageEmbed https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#messageembed
 type MessageEmbed struct {
-	Title     string                `json:"title"`
-	Prompt    string                `json:"prompt"`
-	Thumbnail MessageEmbedThumbnail `json:"thumbnail"`
-	Fields    []MessageEmbedField   `json:"fields"`
+	Title     string                 `json:"title"`
+	Prompt    string                 `json:"prompt"`
+	Thumbnail *MessageEmbedThumbnail `json:"thumbnail"`
+	Fields    []MessageEmbedField    `json:"fields"`
 }
 
 // MessageEmbedThumbnail https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#messageembedthumbnail
@@ -89,6 +90,12 @@ type MessageReference struct {
 	IgnoreGetMessageError bool   `json:"ignore_get_message_error"`
 }
 
+// MessageDelete https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#messagedelete
+type MessageDelete struct {
+	Message *Message `json:"message"`
+	OpUser  *User    `json:"op_user"`
+}
+
 // MessageAudited 消息审核对象
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#%E6%B6%88%E6%81%AF%E5%AE%A1%E6%A0%B8%E5%AF%B9%E8%B1%A1-messageaudited
@@ -116,6 +123,27 @@ type MessagePost struct {
 	ReplyMessageID   string            `json:"msg_id,omitempty"`
 	ReplyEventID     string            `json:"event_id,omitempty"`
 	Markdown         *MessageMarkdown  `json:"markdown,omitempty"`
+	KeyBoard         *MessageKeyboard  `json:"keyboard,omitempty"`
+}
+
+// MessageEscape 消息转义
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html
+func MessageEscape(text string) string {
+	text = strings.ReplaceAll(text, "&", "&amp;")
+	text = strings.ReplaceAll(text, "<", "&lt;")
+	text = strings.ReplaceAll(text, ">", "&gt;")
+	return text
+}
+
+// MessageUnescape 消息解转义
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html
+func MessageUnescape(text string) string {
+	text = strings.ReplaceAll(text, "&amp;", "&")
+	text = strings.ReplaceAll(text, "&lt;", "<")
+	text = strings.ReplaceAll(text, "&gt;", ">")
+	return text
 }
 
 // PostMessageToChannel 向 channel_id 指定的子频道发送消息
