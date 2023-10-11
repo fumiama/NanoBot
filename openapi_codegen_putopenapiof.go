@@ -4,7 +4,6 @@ package nano
 
 import (
 	"io"
-	"unsafe"
 
 	"github.com/pkg/errors"
 )
@@ -18,5 +17,5 @@ func (bot *Bot) putOpenAPIofGuildRoleChannelID(ep string, body io.Reader) (*Guil
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*GuildRoleChannelID)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.GuildRoleChannelID, err
 }

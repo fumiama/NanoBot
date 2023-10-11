@@ -4,7 +4,6 @@ package nano
 
 import (
 	"io"
-	"unsafe"
 
 	"github.com/pkg/errors"
 )
@@ -18,7 +17,7 @@ func (bot *Bot) patchOpenAPIofChannel(ep string, body io.Reader) (*Channel, erro
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.Channel, err
 }
 
 func (bot *Bot) patchOpenAPIofGuildRolePatch(ep string, body io.Reader) (*GuildRolePatch, error) {
@@ -30,5 +29,5 @@ func (bot *Bot) patchOpenAPIofGuildRolePatch(ep string, body io.Reader) (*GuildR
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*GuildRolePatch)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.GuildRolePatch, err
 }

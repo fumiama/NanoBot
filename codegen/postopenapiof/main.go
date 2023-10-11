@@ -11,7 +11,6 @@ package nano
 
 import (
 	"io"
-	"unsafe"
 
 	"github.com/pkg/errors"
 )
@@ -27,7 +26,7 @@ func (bot *Bot) postOpenAPIof[T any](ep, contenttype string, body io.Reader) (*[
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.[T any], err
 }
 `
 

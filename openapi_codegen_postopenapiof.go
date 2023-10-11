@@ -4,7 +4,6 @@ package nano
 
 import (
 	"io"
-	"unsafe"
 
 	"github.com/pkg/errors"
 )
@@ -18,7 +17,7 @@ func (bot *Bot) postOpenAPIofChannel(ep, contenttype string, body io.Reader) (*C
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.Channel, err
 }
 
 func (bot *Bot) postOpenAPIofGuildRoleCreate(ep, contenttype string, body io.Reader) (*GuildRoleCreate, error) {
@@ -30,7 +29,7 @@ func (bot *Bot) postOpenAPIofGuildRoleCreate(ep, contenttype string, body io.Rea
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*GuildRoleCreate)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.GuildRoleCreate, err
 }
 
 func (bot *Bot) postOpenAPIofMessage(ep, contenttype string, body io.Reader) (*Message, error) {
@@ -42,5 +41,5 @@ func (bot *Bot) postOpenAPIofMessage(ep, contenttype string, body io.Reader) (*M
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
 	}
-	return (*Message)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+	return &resp.Message, err
 }
