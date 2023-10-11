@@ -9,28 +9,38 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (bot *Bot) postOpenAPIofChannel(ep string, body io.Reader) (*Channel, error) {
+func (bot *Bot) postOpenAPIofChannel(ep, contenttype string, body io.Reader) (*Channel, error) {
 	resp := &struct {
 		CodeMessageBase
 		Channel
 	}{}
-	err := bot.PostOpenAPI(ep, resp, body)
+	err := bot.PostOpenAPI(ep, contenttype, resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
-func (bot *Bot) postOpenAPIofGuildRoleCreate(ep string, body io.Reader) (*GuildRoleCreate, error) {
+func (bot *Bot) postOpenAPIofGuildRoleCreate(ep, contenttype string, body io.Reader) (*GuildRoleCreate, error) {
 	resp := &struct {
 		CodeMessageBase
 		GuildRoleCreate
 	}{}
-	err := bot.PostOpenAPI(ep, resp, body)
+	err := bot.PostOpenAPI(ep, contenttype, resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*GuildRoleCreate)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*GuildRoleCreate)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+}
+
+func (bot *Bot) postOpenAPIofMessage(ep, contenttype string, body io.Reader) (*Message, error) {
+	resp := &struct {
+		CodeMessageBase
+		Message
+	}{}
+	err := bot.PostOpenAPI(ep, contenttype, resp, body)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return (*Message)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }

@@ -13,12 +13,11 @@ func (bot *Bot) getOpenAPIofShardWSSGateway(ep string) (*ShardWSSGateway, error)
 		CodeMessageBase
 		ShardWSSGateway
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*ShardWSSGateway)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*ShardWSSGateway)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofUser(ep string) (*User, error) {
@@ -26,12 +25,11 @@ func (bot *Bot) getOpenAPIofUser(ep string) (*User, error) {
 		CodeMessageBase
 		User
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*User)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*User)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofGuild(ep string) (*Guild, error) {
@@ -39,12 +37,11 @@ func (bot *Bot) getOpenAPIofGuild(ep string) (*Guild, error) {
 		CodeMessageBase
 		Guild
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*Guild)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*Guild)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofChannel(ep string) (*Channel, error) {
@@ -52,12 +49,11 @@ func (bot *Bot) getOpenAPIofChannel(ep string) (*Channel, error) {
 		CodeMessageBase
 		Channel
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofMember(ep string) (*Member, error) {
@@ -65,12 +61,11 @@ func (bot *Bot) getOpenAPIofMember(ep string) (*Member, error) {
 		CodeMessageBase
 		Member
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*Member)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*Member)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofRoleMembers(ep string) (*RoleMembers, error) {
@@ -78,12 +73,11 @@ func (bot *Bot) getOpenAPIofRoleMembers(ep string) (*RoleMembers, error) {
 		CodeMessageBase
 		RoleMembers
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*RoleMembers)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*RoleMembers)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofGuildRoleList(ep string) (*GuildRoleList, error) {
@@ -91,12 +85,11 @@ func (bot *Bot) getOpenAPIofGuildRoleList(ep string) (*GuildRoleList, error) {
 		CodeMessageBase
 		GuildRoleList
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*GuildRoleList)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*GuildRoleList)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) getOpenAPIofChannelPermissions(ep string) (*ChannelPermissions, error) {
@@ -104,10 +97,21 @@ func (bot *Bot) getOpenAPIofChannelPermissions(ep string) (*ChannelPermissions, 
 		CodeMessageBase
 		ChannelPermissions
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*ChannelPermissions)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*ChannelPermissions)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
+}
+
+func (bot *Bot) getOpenAPIofMessage(ep string) (*Message, error) {
+	resp := &struct {
+		CodeMessageBase
+		Message
+	}{}
+	err := bot.GetOpenAPI(ep, "", resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return (*Message)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }

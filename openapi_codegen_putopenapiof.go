@@ -14,10 +14,9 @@ func (bot *Bot) putOpenAPIofGuildRoleChannelID(ep string, body io.Reader) (*Guil
 		CodeMessageBase
 		GuildRoleChannelID
 	}{}
-	err := bot.PutOpenAPI(ep, resp, body)
+	err := bot.PutOpenAPI(ep, "", resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*GuildRoleChannelID)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*GuildRoleChannelID)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }

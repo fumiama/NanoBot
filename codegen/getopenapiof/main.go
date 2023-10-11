@@ -22,12 +22,11 @@ func (bot *Bot) getOpenAPIof[T any](ep string) (*[T any], error) {
 		CodeMessageBase
 		[T any]
 	}{}
-	err := bot.GetOpenAPI(ep, resp)
+	err := bot.GetOpenAPI(ep, "", resp)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 `
 

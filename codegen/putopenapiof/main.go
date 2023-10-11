@@ -23,12 +23,11 @@ func (bot *Bot) putOpenAPIof[T any](ep string, body io.Reader) (*[T any], error)
 		CodeMessageBase
 		[T any]
 	}{}
-	err := bot.PutOpenAPI(ep, resp, body)
+	err := bot.PutOpenAPI(ep, "", resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 `
 

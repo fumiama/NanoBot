@@ -18,17 +18,16 @@ import (
 `
 
 const template = `
-func (bot *Bot) postOpenAPIof[T any](ep string, body io.Reader) (*[T any], error) {
+func (bot *Bot) postOpenAPIof[T any](ep, contenttype string, body io.Reader) (*[T any], error) {
 	resp := &struct {
 		CodeMessageBase
 		[T any]
 	}{}
-	err := bot.PostOpenAPI(ep, resp, body)
+	err := bot.PostOpenAPI(ep, contenttype, resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*[T any])(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 `
 

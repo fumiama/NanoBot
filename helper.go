@@ -5,9 +5,8 @@ import (
 	"strings"
 )
 
-// getCallerFuncName 获取调用者函数名
-func getCallerFuncName() string {
-	pc, _, _, ok := runtime.Caller(2)
+func getFuncNameWithSkip(n int) string {
+	pc, _, _, ok := runtime.Caller(n)
 	if !ok {
 		return ""
 	}
@@ -17,4 +16,14 @@ func getCallerFuncName() string {
 		return fullname
 	}
 	return fullname[i:]
+}
+
+// getThisFuncName 获取正在执行的函数名
+func getThisFuncName() string {
+	return getFuncNameWithSkip(1)
+}
+
+// getCallerFuncName 获取调用者函数名
+func getCallerFuncName() string {
+	return getFuncNameWithSkip(2)
 }

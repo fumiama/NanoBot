@@ -58,7 +58,7 @@ type GuildRoleCreate struct {
 //
 // 参数为非必填，但至少需要传其中之一，默认为空或 0
 func (bot *Bot) CreateGuildRoleOf(id string, name string, color uint32, hoist int32) (*GuildRoleCreate, error) {
-	return bot.postOpenAPIofGuildRoleCreate("/guilds/"+id+"/roles", WriteBodyFromJSON(&struct {
+	return bot.postOpenAPIofGuildRoleCreate("/guilds/"+id+"/roles", "", WriteBodyFromJSON(&struct {
 		N string `json:"name,omitempty"`
 		C uint32 `json:"color,omitempty"`
 		H int32  `json:"hoist,omitempty"`
@@ -89,7 +89,7 @@ func (bot *Bot) PatchGuildRoleOf(guildid, roleid string, name string, color uint
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/delete_guild_role.html
 func (bot *Bot) DeleteGuildRoleOf(guildid, roleid string) error {
-	return bot.DeleteOpenAPI("/guilds/"+guildid+"/roles/"+roleid, nil)
+	return bot.DeleteOpenAPI("/guilds/"+guildid+"/roles/"+roleid, "", nil)
 }
 
 // GuildRoleChannelID 频道身份组成员返回 只填充了子频道 id 字段的对象
@@ -140,5 +140,5 @@ func (bot *Bot) RemoveRoleFromMemberOfGuild(guildid, userid, roleid, channelid s
 			}{channelid},
 		})
 	}
-	return bot.DeleteOpenAPI("/guilds/"+guildid+"/members/"+userid+"/roles/"+roleid, body)
+	return bot.DeleteOpenAPI("/guilds/"+guildid+"/members/"+userid+"/roles/"+roleid, "", body)
 }

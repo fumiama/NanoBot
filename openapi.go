@@ -11,11 +11,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions
+//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
-func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
-	req, err := NewHTTPEndpointGetRequestWithAuth(ep, bot.Authorization())
+func (bot *Bot) GetOpenAPI(ep, contenttype string, ptr any) error {
+	req, err := NewHTTPEndpointGetRequestWithAuth(ep, contenttype, bot.Authorization())
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
@@ -50,8 +50,8 @@ func (bot *Bot) GetOpenAPI(ep string, ptr any) error {
 //go:generate go run codegen/putopenapiof/main.go GuildRoleChannelID
 
 // PutOpenAPI 向 ep 发送 PUT 并获取 json 结构化数据返回写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
-func (bot *Bot) PutOpenAPI(ep string, ptr any, body io.Reader) error {
-	req, err := NewHTTPEndpointPutRequestWithAuth(ep, bot.Authorization(), body)
+func (bot *Bot) PutOpenAPI(ep, contenttype string, ptr any, body io.Reader) error {
+	req, err := NewHTTPEndpointPutRequestWithAuth(ep, contenttype, bot.Authorization(), body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
@@ -84,8 +84,8 @@ func (bot *Bot) PutOpenAPI(ep string, ptr any, body io.Reader) error {
 }
 
 // DeleteOpenAPI 向 ep 发送 DELETE 请求
-func (bot *Bot) DeleteOpenAPI(ep string, body io.Reader) error {
-	req, err := NewHTTPEndpointDeleteRequestWithAuth(ep, bot.Authorization(), body)
+func (bot *Bot) DeleteOpenAPI(ep, contenttype string, body io.Reader) error {
+	req, err := NewHTTPEndpointDeleteRequestWithAuth(ep, contenttype, bot.Authorization(), body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
@@ -103,11 +103,11 @@ func (bot *Bot) DeleteOpenAPI(ep string, body io.Reader) error {
 	return nil
 }
 
-//go:generate go run codegen/postopenapiof/main.go Channel GuildRoleCreate
+//go:generate go run codegen/postopenapiof/main.go Channel GuildRoleCreate Message
 
 // PostOpenAPI 从 ep 得到 json 结构化数据返回值写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
-func (bot *Bot) PostOpenAPI(ep string, ptr any, body io.Reader) error {
-	req, err := NewHTTPEndpointPostRequestWithAuth(ep, bot.Authorization(), body)
+func (bot *Bot) PostOpenAPI(ep, contenttype string, ptr any, body io.Reader) error {
+	req, err := NewHTTPEndpointPostRequestWithAuth(ep, contenttype, bot.Authorization(), body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
@@ -142,8 +142,8 @@ func (bot *Bot) PostOpenAPI(ep string, ptr any, body io.Reader) error {
 //go:generate go run codegen/patchopenapiof/main.go Channel GuildRolePatch
 
 // PatchOpenAPI 从 ep 得到 json 结构化数据返回值写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
-func (bot *Bot) PatchOpenAPI(ep string, ptr any, body io.Reader) error {
-	req, err := NewHTTPEndpointPatchRequestWithAuth(ep, bot.Authorization(), body)
+func (bot *Bot) PatchOpenAPI(ep, contenttype string, ptr any, body io.Reader) error {
+	req, err := NewHTTPEndpointPatchRequestWithAuth(ep, contenttype, bot.Authorization(), body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}

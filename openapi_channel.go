@@ -64,7 +64,7 @@ type Channel struct {
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/get_channels.html
 func (bot *Bot) GetChannelsOfGuild(id string) (channels []Channel, err error) {
-	err = bot.GetOpenAPI("/guilds/"+id+"/channels", &channels)
+	err = bot.GetOpenAPI("/guilds/"+id+"/channels", "", &channels)
 	return
 }
 
@@ -95,7 +95,7 @@ type ChannelPost struct {
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/post_channels.html
 func (bot *Bot) CreateChannelInGuild(id string, config *ChannelPost) (*Channel, error) {
-	return bot.postOpenAPIofChannel("/guilds/"+id+"/channels", WriteBodyFromJSON(config))
+	return bot.postOpenAPIofChannel("/guilds/"+id+"/channels", "", WriteBodyFromJSON(config))
 }
 
 // ChannelPatch 子频道 patch 操作所用对象
@@ -120,7 +120,7 @@ func (bot *Bot) PatchChannelOf(id string, config *ChannelPatch) (*Channel, error
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/delete_channel.html
 func (bot *Bot) DeleteChannelOf(id string) error {
-	return bot.DeleteOpenAPI("/channels/"+id, nil)
+	return bot.DeleteOpenAPI("/channels/"+id, "", nil)
 }
 
 // GetOnlineNumsInChannel 查询音视频/直播子频道 channel_id 的在线成员数
@@ -131,7 +131,7 @@ func (bot *Bot) GetOnlineNumsInChannel(id string) (int, error) {
 		CodeMessageBase
 		N int `json:"online_nums"`
 	}{}
-	err := bot.GetOpenAPI("/channels/"+id+"/online_nums", &resp)
+	err := bot.GetOpenAPI("/channels/"+id+"/online_nums", "", &resp)
 	return resp.N, err
 }
 
@@ -156,7 +156,7 @@ func (bot *Bot) GetChannelPermissionsOfUser(channelid, userid string) (*ChannelP
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/put_channel_permissions.html
 func (bot *Bot) SetChannelPermissionsOfUser(channelid, userid string, add, remove string) error {
-	return bot.PutOpenAPI("/channels/"+channelid+"/members/"+userid+"/permissions", nil, WriteBodyFromJSON(&struct {
+	return bot.PutOpenAPI("/channels/"+channelid+"/members/"+userid+"/permissions", "", nil, WriteBodyFromJSON(&struct {
 		A string `json:"add"`
 		R string `json:"remove"`
 	}{add, remove}))
@@ -173,7 +173,7 @@ func (bot *Bot) GetChannelPermissionsOfRole(channelid, roleid string) (*ChannelP
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/put_channel_roles_permissions.html
 func (bot *Bot) SetChannelPermissionsOfRole(channelid, roleid string, add, remove string) error {
-	return bot.PutOpenAPI("/channels/"+channelid+"/roles/"+roleid+"/permissions", nil, WriteBodyFromJSON(&struct {
+	return bot.PutOpenAPI("/channels/"+channelid+"/roles/"+roleid+"/permissions", "", nil, WriteBodyFromJSON(&struct {
 		A string `json:"add"`
 		R string `json:"remove"`
 	}{add, remove}))

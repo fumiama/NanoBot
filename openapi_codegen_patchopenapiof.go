@@ -14,12 +14,11 @@ func (bot *Bot) patchOpenAPIofChannel(ep string, body io.Reader) (*Channel, erro
 		CodeMessageBase
 		Channel
 	}{}
-	err := bot.PatchOpenAPI(ep, resp, body)
+	err := bot.PatchOpenAPI(ep, "", resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*Channel)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }
 
 func (bot *Bot) patchOpenAPIofGuildRolePatch(ep string, body io.Reader) (*GuildRolePatch, error) {
@@ -27,10 +26,9 @@ func (bot *Bot) patchOpenAPIofGuildRolePatch(ep string, body io.Reader) (*GuildR
 		CodeMessageBase
 		GuildRolePatch
 	}{}
-	err := bot.PatchOpenAPI(ep, resp, body)
+	err := bot.PatchOpenAPI(ep, "", resp, body)
 	if err != nil {
 		err = errors.Wrap(err, getCallerFuncName())
-		return nil, err
 	}
-	return (*GuildRolePatch)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), nil
+	return (*GuildRolePatch)(unsafe.Add(unsafe.Pointer(resp), unsafe.Sizeof(CodeMessageBase{}))), err
 }

@@ -27,6 +27,6 @@ func (bot *Bot) GetMyGuilds(before, after string, limit int) (guilds []Guild, er
 		"before", before,
 		"after", after,
 		"limit", limit,
-	), &guilds)
+	), "", &guilds)
 	return
 }

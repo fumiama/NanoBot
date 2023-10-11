@@ -23,7 +23,7 @@ func (bot *Bot) GetGuildMembersIn(id, after string, limit uint32) (members []Mem
 	err = bot.GetOpenAPI(WriteHTTPQueryIfNotNil("/guilds/"+id+"/members",
 		"after", after,
 		"limit", limit,
-	), &members)
+	), "", &members)
 	return
 }
 
@@ -58,7 +58,7 @@ func (bot *Bot) GetGuildMemberOf(guildid, userid string) (*Member, error) {
 //
 // - delhistmsgdays: 消息撤回时间范围仅支持固定的天数：3，7，15，30。 特殊的时间范围：-1: 撤回全部消息。默认值为0不撤回任何消息。
 func (bot *Bot) DeleteGuildMemberOf(guildid, userid string, addblklst bool, delhistmsgdays int) error {
-	return bot.DeleteOpenAPI("/guilds/"+guildid+"/members/"+userid, WriteBodyFromJSON(&struct {
+	return bot.DeleteOpenAPI("/guilds/"+guildid+"/members/"+userid, "", WriteBodyFromJSON(&struct {
 		A bool `json:"add_blacklist"`
 		D int  `json:"delete_history_msg_days"`
 	}{addblklst, delhistmsgdays}))

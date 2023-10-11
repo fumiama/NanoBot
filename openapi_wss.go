@@ -8,7 +8,7 @@ func (bot *Bot) GetGeneralWSSGateway() (string, error) {
 		CodeMessageBase
 		U string `json:"url"`
 	}{}
-	err := bot.GetOpenAPI("/gateway", &resp)
+	err := bot.GetOpenAPI("/gateway", "", &resp)
 	return resp.U, err
 }
 
