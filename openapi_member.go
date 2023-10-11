@@ -16,10 +16,10 @@ type Member struct {
 	Pending  bool      `json:"pending"`
 }
 
-// GetGuildMembers 获取 guild_id 指定的频道中所有成员的详情列表，支持分页
+// GetGuildMembersIn 获取 guild_id 指定的频道中所有成员的详情列表，支持分页
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/get_members.html
-func (bot *Bot) GetGuildMembers(id, after string, limit uint32) (members []Member, err error) {
+func (bot *Bot) GetGuildMembersIn(id, after string, limit uint32) (members []Member, err error) {
 	err = bot.GetOpenAPI(WriteHTTPQueryIfNotNil("/guilds/"+id+"/members",
 		"after", after,
 		"limit", limit,
@@ -35,29 +35,29 @@ type RoleMembers struct {
 	Next string   `json:"next"`
 }
 
-// GetRoleMembers 获取 guild_id 频道中指定role_id身份组下所有成员的详情列表，支持分页
+// GetRoleMembersOf 获取 guild_id 频道中指定role_id身份组下所有成员的详情列表，支持分页
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/get_role_members.html
-func (bot *Bot) GetRoleMembers(guildid, roleid, startindex string, limit uint32) (*RoleMembers, error) {
+func (bot *Bot) GetRoleMembersOf(guildid, roleid, startindex string, limit uint32) (*RoleMembers, error) {
 	return bot.getOpenAPIofRoleMembers(WriteHTTPQueryIfNotNil("/guilds/"+guildid+"/roles/"+roleid+"/members",
 		"start_index", startindex,
 		"limit", limit,
 	))
 }
 
-// GetGuildMember 获取 guild_id 指定的频道中 user_id 对应成员的详细信息
+// GetGuildMemberOf 获取 guild_id 指定的频道中 user_id 对应成员的详细信息
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/get_member.html
-func (bot *Bot) GetGuildMember(guildid, userid string) (*Member, error) {
+func (bot *Bot) GetGuildMemberOf(guildid, userid string) (*Member, error) {
 	return bot.getOpenAPIofMember("/guilds/" + guildid + "/members/" + userid)
 }
 
-// DeleteGuildMember 删除 guild_id 指定的频道下的成员 user_id
+// DeleteGuildMemberOf 删除 guild_id 指定的频道下的成员 user_id
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/member/delete_member.html
 //
 // - delhistmsgdays: 消息撤回时间范围仅支持固定的天数：3，7，15，30。 特殊的时间范围：-1: 撤回全部消息。默认值为0不撤回任何消息。
-func (bot *Bot) DeleteGuildMember(guildid, userid string, addblklst bool, delhistmsgdays int) error {
+func (bot *Bot) DeleteGuildMemberOf(guildid, userid string, addblklst bool, delhistmsgdays int) error {
 	return bot.DeleteOpenAPI("/guilds/"+guildid+"/members/"+userid, WriteBodyFromJSON(&struct {
 		A bool `json:"add_blacklist"`
 		D int  `json:"delete_history_msg_days"`

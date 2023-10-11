@@ -12,10 +12,10 @@ type User struct {
 	UnionUserAccount string `json:"union_user_account"`
 }
 
-// GetMe 获取当前用户（机器人）详情
+// GetMyInfo 获取当前用户（机器人）详情
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/user/me.html
-func (bot *Bot) GetMe() (*User, error) {
+func (bot *Bot) GetMyInfo() (*User, error) {
 	return bot.getOpenAPIofUser("/users/@me")
 }
 

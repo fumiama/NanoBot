@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList
+//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) GetOpenAPI(ep string, ptr any) error {

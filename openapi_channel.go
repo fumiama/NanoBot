@@ -91,10 +91,10 @@ type ChannelPost struct {
 	ApplicationID   string          `json:"application_id,omitempty"`
 }
 
-// CreateChannel 用于在 guild_id 指定的频道下创建一个子频道
+// CreateChannelInGuild 用于在 guild_id 指定的频道下创建一个子频道
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/post_channels.html
-func (bot *Bot) CreateChannel(id string, config *ChannelPost) (*Channel, error) {
+func (bot *Bot) CreateChannelInGuild(id string, config *ChannelPost) (*Channel, error) {
 	return bot.postOpenAPIofChannel("/guilds/"+id+"/channels", WriteBodyFromJSON(config))
 }
 
@@ -109,17 +109,17 @@ type ChannelPatch struct {
 	SpeakPermission *SpeakPermission `json:"speak_permission,omitempty"`
 }
 
-// PatchChannel 修改 channel_id 指定的子频道的信息
+// PatchChannelOf 修改 channel_id 指定的子频道的信息
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/patch_channel.html
-func (bot *Bot) PatchChannel(id string, config *ChannelPatch) (*Channel, error) {
+func (bot *Bot) PatchChannelOf(id string, config *ChannelPatch) (*Channel, error) {
 	return bot.patchOpenAPIofChannel("/channels/"+id, WriteBodyFromJSON(config))
 }
 
-// DeleteChannel 删除 channel_id 指定的子频道
+// DeleteChannelOf 删除 channel_id 指定的子频道
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/channel/delete_channel.html
-func (bot *Bot) DeleteChannel(id string) error {
+func (bot *Bot) DeleteChannelOf(id string) error {
 	return bot.DeleteOpenAPI("/channels/"+id, nil)
 }
 
@@ -133,4 +133,48 @@ func (bot *Bot) GetOnlineNumsInChannel(id string) (int, error) {
 	}{}
 	err := bot.GetOpenAPI("/channels/"+id+"/online_nums", &resp)
 	return resp.N, err
+}
+
+// ChannelPermissions 子频道权限对象
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/model.html
+type ChannelPermissions struct {
+	ChannelID   string `json:"channel_id"`
+	UserID      string `json:"user_id"` // UserID 不与 RoleID 同时出现
+	RoleID      string `json:"role_id"` // RoleID 不与 UserID 同时出现
+	Permissions string `json:"permissions"`
+}
+
+// GetChannelPermissionsOfUser 获取子频道 channel_id 下用户 user_id 的权限
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/get_channel_permissions.html
+func (bot *Bot) GetChannelPermissionsOfUser(channelid, userid string) (*ChannelPermissions, error) {
+	return bot.getOpenAPIofChannelPermissions("/channels/" + channelid + "/members/" + userid + "/permissions")
+}
+
+// SetChannelPermissionsOfUser 修改子频道 channel_id 下用户 user_id 的权限
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/put_channel_permissions.html
+func (bot *Bot) SetChannelPermissionsOfUser(channelid, userid string, add, remove string) error {
+	return bot.PutOpenAPI("/channels/"+channelid+"/members/"+userid+"/permissions", nil, WriteBodyFromJSON(&struct {
+		A string `json:"add"`
+		R string `json:"remove"`
+	}{add, remove}))
+}
+
+// GetChannelPermissionsOfRole 获取子频道 channel_id 下身份组 role_id 的权限
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/get_channel_roles_permissions.html
+func (bot *Bot) GetChannelPermissionsOfRole(channelid, roleid string) (*ChannelPermissions, error) {
+	return bot.getOpenAPIofChannelPermissions("/channels/" + channelid + "/roles/" + roleid + "/permissions")
+}
+
+// SetChannelPermissionsOfRole 修改子频道 channel_id 下身份组 role_id 的权限
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/channel_permissions/put_channel_roles_permissions.html
+func (bot *Bot) SetChannelPermissionsOfRole(channelid, roleid string, add, remove string) error {
+	return bot.PutOpenAPI("/channels/"+channelid+"/roles/"+roleid+"/permissions", nil, WriteBodyFromJSON(&struct {
+		A string `json:"add"`
+		R string `json:"remove"`
+	}{add, remove}))
 }

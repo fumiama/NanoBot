@@ -37,10 +37,10 @@ type GuildRoleList struct {
 	RoleNumLimit string `json:"role_num_limit"`
 }
 
-// GetGuildRoleList 获取 guild_id指定的频道下的身份组列表
+// GetGuildRoleListIn 获取 guild_id 指定的频道下的身份组列表
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/get_guild_roles.html
-func (bot *Bot) GetGuildRoleList(id string) (*GuildRoleList, error) {
+func (bot *Bot) GetGuildRoleListIn(id string) (*GuildRoleList, error) {
 	return bot.getOpenAPIofGuildRoleList("/guilds/" + id + "/roles")
 }
 
@@ -52,12 +52,12 @@ type GuildRoleCreate struct {
 	Role   Role   `json:"role"`
 }
 
-// CreateGuildRole 创建频道身份组
+// CreateGuildRoleOf 创建频道身份组
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/post_guild_role.html
 //
 // 参数为非必填，但至少需要传其中之一，默认为空或 0
-func (bot *Bot) CreateGuildRole(id string, name string, color uint32, hoist int32) (*GuildRoleCreate, error) {
+func (bot *Bot) CreateGuildRoleOf(id string, name string, color uint32, hoist int32) (*GuildRoleCreate, error) {
 	return bot.postOpenAPIofGuildRoleCreate("/guilds/"+id+"/roles", WriteBodyFromJSON(&struct {
 		N string `json:"name,omitempty"`
 		C uint32 `json:"color,omitempty"`
@@ -74,10 +74,10 @@ type GuildRolePatch struct {
 	Role    Role   `json:"role"`
 }
 
-// PatchGuildRole 修改频道 guild_id 下 role_id 指定的身份组
+// PatchGuildRoleOf 修改频道 guild_id 下 role_id 指定的身份组
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/patch_guild_role.html
-func (bot *Bot) PatchGuildRole(guildid, roleid string, name string, color uint32, hoist int32) (*GuildRolePatch, error) {
+func (bot *Bot) PatchGuildRoleOf(guildid, roleid string, name string, color uint32, hoist int32) (*GuildRolePatch, error) {
 	return bot.patchOpenAPIofGuildRolePatch("/guilds/"+guildid+"/roles/"+roleid, WriteBodyFromJSON(&struct {
 		N string `json:"name,omitempty"`
 		C uint32 `json:"color,omitempty"`
@@ -85,7 +85,10 @@ func (bot *Bot) PatchGuildRole(guildid, roleid string, name string, color uint32
 	}{name, color, hoist}))
 }
 
-func (bot *Bot) DeleteGuildRole(guildid, roleid string) error {
+// DeleteGuildRoleOf 删除频道 guild_id下 role_id 对应的身份组
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/delete_guild_role.html
+func (bot *Bot) DeleteGuildRoleOf(guildid, roleid string) error {
 	return bot.DeleteOpenAPI("/guilds/"+guildid+"/roles/"+roleid, nil)
 }
 
@@ -98,12 +101,12 @@ type GuildRoleChannelID struct {
 	} `json:"channel"`
 }
 
-// AddRoleToMember 将频道guild_id下的用户 user_id 添加到身份组 role_id
+// AddRoleToMemberOfGuild 将频道 guild_id 下的用户 user_id 添加到身份组 role_id
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/put_guild_member_role.html
 //
 // 返回 channel_id
-func (bot *Bot) AddRoleToMember(guildid, userid, roleid, channelid string) (string, error) {
+func (bot *Bot) AddRoleToMemberOfGuild(guildid, userid, roleid, channelid string) (string, error) {
 	var body io.Reader
 	if roleid == RoleIDChannelAdmin {
 		if channelid == "" {
@@ -122,10 +125,10 @@ func (bot *Bot) AddRoleToMember(guildid, userid, roleid, channelid string) (stri
 	return r.Channel.ID, nil
 }
 
-// RemoveRoleFromMember 将用户 user_id 从 频道 guild_id 的 role_id 身份组中移除
+// RemoveRoleFromMemberOfGuild 将用户 user_id 从 频道 guild_id 的 role_id 身份组中移除
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/delete_guild_member_role.html
-func (bot *Bot) RemoveRoleFromMember(guildid, userid, roleid, channelid string) error {
+func (bot *Bot) RemoveRoleFromMemberOfGuild(guildid, userid, roleid, channelid string) error {
 	var body io.Reader
 	if roleid == RoleIDChannelAdmin {
 		if channelid == "" {
