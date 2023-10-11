@@ -23,3 +23,38 @@ type Guild struct {
 func (bot *Bot) GetGuildByID(id string) (*Guild, error) {
 	return bot.getOpenAPIofGuild("/guilds/" + id)
 }
+
+// SetAllMuteInGuild 禁言全员 / 解除全员禁言
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/patch_guild_mute.html
+func (bot *Bot) SetAllMuteInGuild(id string, endtimestamp string, seconds string) error {
+	return bot.PatchOpenAPI("/guilds/"+id+"/mute", "", nil, WriteBodyFromJSON(&struct {
+		T string `json:"mute_end_timestamp"`
+		S string `json:"mute_seconds"`
+	}{endtimestamp, seconds}))
+}
+
+// SetUserMuteInGuild 禁言 / 解除禁言频道 guild_id 下的成员 user_id
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/patch_guild_mute.html
+func (bot *Bot) SetUserMuteInGuild(guildid, userid string, endtimestamp string, seconds string) error {
+	return bot.PatchOpenAPI("/guilds/"+guildid+"/members/"+userid+"/mute", "", nil, WriteBodyFromJSON(&struct {
+		T string `json:"mute_end_timestamp"`
+		S string `json:"mute_seconds"`
+	}{endtimestamp, seconds}))
+}
+
+// SetUsersMuteInGuild 批量禁言 / 解除禁言频道 guild_id 下的成员 user_id
+//
+// https://bot.q.qq.com/wiki/develop/api/openapi/guild/patch_guild_mute.html
+func (bot *Bot) SetUsersMuteInGuild(guildid string, endtimestamp string, seconds string, userids ...string) ([]string, error) {
+	resp := &struct {
+		U []string `json:"user_ids"`
+	}{}
+	err := bot.PatchOpenAPI("/guilds/"+guildid+"/mute", "", resp, WriteBodyFromJSON(&struct {
+		T string   `json:"mute_end_timestamp"`
+		S string   `json:"mute_seconds"`
+		U []string `json:"user_ids"`
+	}{endtimestamp, seconds, userids}))
+	return resp.U, err
+}
