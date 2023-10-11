@@ -17,7 +17,7 @@ import (
 )
 
 func newHTTPEndpointRequestWithAuth(method, contenttype, ep string, auth string, body io.Reader) (req *http.Request, err error) {
-	req, err = http.NewRequest(method, StandardAPI+ep, body)
+	req, err = http.NewRequest(method, OpenAPI+ep, body)
 	if err != nil {
 		return
 	}

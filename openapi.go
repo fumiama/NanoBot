@@ -35,7 +35,7 @@ func (bot *Bot) GetOpenAPI(ep, contenttype string, ptr any) error {
 	if resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= http.StatusBadRequest {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
 	if ptr == nil {
@@ -67,7 +67,7 @@ func (bot *Bot) PutOpenAPI(ep, contenttype string, ptr any, body io.Reader) erro
 	if resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= http.StatusBadRequest {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
 	if ptr == nil {
@@ -97,7 +97,7 @@ func (bot *Bot) DeleteOpenAPI(ep, contenttype string, body io.Reader) error {
 	if resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= http.StatusBadRequest {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
 	return nil
@@ -119,7 +119,7 @@ func (bot *Bot) PostOpenAPI(ep, contenttype string, ptr any, body io.Reader) err
 	if resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= http.StatusBadRequest {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
 	if ptr == nil {
@@ -151,7 +151,7 @@ func (bot *Bot) PatchOpenAPI(ep, contenttype string, ptr any, body io.Reader) er
 	if resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= http.StatusBadRequest {
 		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
 	}
 	if ptr == nil {
