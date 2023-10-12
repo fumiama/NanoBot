@@ -14,6 +14,7 @@ type Member struct {
 	Deaf     bool      `json:"deaf"`
 	Mute     bool      `json:"mute"`
 	Pending  bool      `json:"pending"`
+	OpUserID string    `json:"op_user_id"` // https://bot.q.qq.com/wiki/develop/api/gateway/guild_member.html#%E5%86%85%E5%AE%B9
 }
 
 // GetGuildMembersIn 获取 guild_id 指定的频道中所有成员的详情列表，支持分页

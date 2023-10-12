@@ -15,6 +15,7 @@ type Guild struct {
 	MemberCount int       `json:"member_count"`
 	MaxMembers  int       `json:"max_members"`
 	Description string    `json:"description"`
+	OpUserID    string    `json:"op_user_id"` // https://bot.q.qq.com/wiki/develop/api/gateway/guild.html#%E4%BA%8B%E4%BB%B6%E5%86%85%E5%AE%B9
 }
 
 // GetGuildByID 获取 guild_id 指定的频道的详情

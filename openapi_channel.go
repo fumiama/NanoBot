@@ -58,6 +58,7 @@ type Channel struct {
 	SpeakPermission SpeakPermission `json:"speak_permission"`
 	ApplicationID   string          `json:"application_id"` // ApplicationID see https://bot.q.qq.com/wiki/develop/api/openapi/channel/model.html#%E5%BA%94%E7%94%A8%E5%AD%90%E9%A2%91%E9%81%93%E7%9A%84%E5%BA%94%E7%94%A8%E7%B1%BB%E5%9E%8B
 	Permissions     string          `json:"permissions"`
+	OpUserID        string          `json:"op_user_id"` // https://bot.q.qq.com/wiki/develop/api/gateway/channel.html#%E5%86%85%E5%AE%B9
 }
 
 // GetChannelsOfGuild 获取 guild_id 指定的频道下的子频道列表
