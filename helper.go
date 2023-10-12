@@ -47,3 +47,22 @@ func MessageUnescape(text string) string {
 	text = strings.ReplaceAll(text, "&gt;", ">")
 	return text
 }
+
+// UnderlineToCamel convert abc_def to AbcDef
+func UnderlineToCamel(s string) string {
+	sb := strings.Builder{}
+	isnextupper := true
+	for _, c := range []byte(strings.ToLower(s)) {
+		if c == '_' {
+			isnextupper = true
+			continue
+		}
+		if isnextupper {
+			sb.WriteString(strings.ToUpper(string(c)))
+			isnextupper = false
+			continue
+		}
+		sb.WriteByte(c)
+	}
+	return sb.String()
+}
