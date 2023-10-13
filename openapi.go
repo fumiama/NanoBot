@@ -19,11 +19,41 @@ func checkrespbaseunsafe(ptr any) error {
 	return nil
 }
 
-//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message MessageSetting PinsMessage
+//go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message MessageSetting PinsMessage Schedule
 
 // GetOpenAPI 从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
 func (bot *Bot) GetOpenAPI(ep, contenttype string, ptr any) error {
-	req, err := NewHTTPEndpointGetRequestWithAuth(ep, contenttype, bot.Authorization())
+	req, err := NewHTTPEndpointGetRequestWithAuth(ep, contenttype, bot.Authorization(), nil)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNoContent {
+		return nil
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
+	}
+	if ptr == nil {
+		return nil
+	}
+	err = json.NewDecoder(resp.Body).Decode(ptr)
+	if err != nil {
+		return errors.Wrap(err, getCallerFuncName())
+	}
+	if reflect.ValueOf(ptr).Elem().Kind() == reflect.Slice {
+		return nil
+	}
+	return checkrespbaseunsafe(ptr)
+}
+
+// GetOpenAPIWithBody 不规范地从 ep 获取 json 结构化数据写到 ptr, ptr 除 Slice 外必须在开头继承 CodeMessageBase
+func (bot *Bot) GetOpenAPIWithBody(ep, contenttype string, ptr any, body io.Reader) error {
+	req, err := NewHTTPEndpointGetRequestWithAuth(ep, contenttype, bot.Authorization(), body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}

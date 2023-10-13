@@ -30,8 +30,8 @@ func newHTTPEndpointRequestWithAuth(method, contenttype, ep string, auth string,
 }
 
 // NewHTTPEndpointGetRequestWithAuth 新建带鉴权头的 HTTP GET 请求
-func NewHTTPEndpointGetRequestWithAuth(ep string, contenttype string, auth string) (*http.Request, error) {
-	return newHTTPEndpointRequestWithAuth("GET", contenttype, ep, auth, nil)
+func NewHTTPEndpointGetRequestWithAuth(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error) {
+	return newHTTPEndpointRequestWithAuth("GET", contenttype, ep, auth, body)
 }
 
 // NewHTTPEndpointPutRequestWithAuth 新建带鉴权头的 HTTP PUT 请求

@@ -137,3 +137,15 @@ func (bot *Bot) getOpenAPIofPinsMessage(ep string) (*PinsMessage, error) {
 	}
 	return &resp.PinsMessage, err
 }
+
+func (bot *Bot) getOpenAPIofSchedule(ep string) (*Schedule, error) {
+	resp := &struct {
+		CodeMessageBase
+		Schedule
+	}{}
+	err := bot.GetOpenAPI(ep, "", resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return &resp.Schedule, err
+}
