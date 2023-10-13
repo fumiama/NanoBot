@@ -50,6 +50,7 @@ func (bot *Bot) SetUserMuteInGuild(guildid, userid string, endtimestamp string, 
 // https://bot.q.qq.com/wiki/develop/api/openapi/guild/patch_guild_mute.html
 func (bot *Bot) SetUsersMuteInGuild(guildid string, endtimestamp string, seconds string, userids ...string) ([]string, error) {
 	resp := &struct {
+		CodeMessageBase
 		U []string `json:"user_ids"`
 	}{}
 	err := bot.PatchOpenAPI("/guilds/"+guildid+"/mute", "", resp, WriteBodyFromJSON(&struct {
