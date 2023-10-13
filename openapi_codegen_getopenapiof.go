@@ -149,3 +149,15 @@ func (bot *Bot) getOpenAPIofSchedule(ep string) (*Schedule, error) {
 	}
 	return &resp.Schedule, err
 }
+
+func (bot *Bot) getOpenAPIofMessageReactionUsers(ep string) (*MessageReactionUsers, error) {
+	resp := &struct {
+		CodeMessageBase
+		MessageReactionUsers
+	}{}
+	err := bot.GetOpenAPI(ep, "", resp)
+	if err != nil {
+		err = errors.Wrap(err, getCallerFuncName())
+	}
+	return &resp.MessageReactionUsers, err
+}
