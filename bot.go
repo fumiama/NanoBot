@@ -1,6 +1,7 @@
 package nano
 
 import (
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"net"
@@ -28,15 +29,15 @@ type Bot struct {
 	Intents    uint32          // Intents 欲接收的事件
 	Properties json.RawMessage // Properties 一些环境变量, 目前没用
 
-	gateway  string  // gateway 获得的网关
-	shard    [2]byte // shard 分片
-	seq      uint32
-	handlers map[string]GeneralHandleType // handlers 方便调用的 handler
-	mu       sync.Mutex                   // 写锁
-	conn     *websocket.Conn
+	gateway   string                       // gateway 获得的网关
+	shard     [2]byte                      // shard 分片
+	seq       uint32                       // seq 最新的 s
+	handlers  map[string]GeneralHandleType // handlers 方便调用的 handler
+	mu        sync.Mutex                   // 写锁
+	conn      *websocket.Conn              // conn 目前的 wss 连接
+	heartbeat uint32                       // heartbeat 心跳周期, 单位毫秒
 
-	ready     EventReady
-	heartbeat uint32 // heartbeat 心跳周期, 单位毫秒
+	ready EventReady //
 }
 
 // Init 初始化, 只需执行一次
@@ -90,7 +91,7 @@ func (bot *Bot) Connect() {
 					addr = BytesToString(filepath)
 				}
 			}
-			return net.Dial(network, addr) // support unix socket transport
+			return tls.Dial(network, addr, websocket.DefaultDialer.TLSClientConfig) // support unix socket transport
 		},
 	}
 	for {
