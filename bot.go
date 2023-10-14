@@ -19,31 +19,30 @@ var clients = syncx.Map[string, *Bot]{}
 
 // Bot 一个机器人实例的配置
 type Bot struct {
-	AppID      string        // AppID is BotAppID（开发者ID）
-	Token      string        // Token is 机器人令牌
-	Secret     string        // Secret is 机器人密钥
-	SuperUsers []string      // SuperUsers 超级用户
-	Timeout    time.Duration // Timeout is API 调用超时
-	Handler    *Handler      // Handler 注册对各种事件的处理
+	AppID      string          // AppID is BotAppID（开发者ID）
+	Token      string          // Token is 机器人令牌
+	Secret     string          // Secret is 机器人密钥
+	SuperUsers []string        // SuperUsers 超级用户
+	Timeout    time.Duration   // Timeout is API 调用超时
+	Handler    *Handler        // Handler 注册对各种事件的处理
+	Intents    uint32          // Intents 欲接收的事件
+	Properties json.RawMessage // Properties 一些环境变量, 目前没用
 
-	gateway    string  // gateway 获得的网关
-	shard      [2]byte // shard 分片
-	seq        uint32
-	handlers   map[string]GeneralHandleType // handlers 方便调用的 handler
-	mu         sync.Mutex                   // 写锁
-	conn       *websocket.Conn
-	heartbeat  uint32 // heartbeat 心跳周期, 单位毫秒
-	intents    uint32
-	properties json.RawMessage
-	ready      EventReady
+	gateway  string  // gateway 获得的网关
+	shard    [2]byte // shard 分片
+	seq      uint32
+	handlers map[string]GeneralHandleType // handlers 方便调用的 handler
+	mu       sync.Mutex                   // 写锁
+	conn     *websocket.Conn
+
+	ready     EventReady
+	heartbeat uint32 // heartbeat 心跳周期, 单位毫秒
 }
 
 // Init 初始化, 只需执行一次
-func (b *Bot) Init(gateway string, shard [2]byte, intents uint32, properties json.RawMessage) *Bot {
+func (b *Bot) Init(gateway string, shard [2]byte) *Bot {
 	b.gateway = gateway
 	b.shard = shard
-	b.intents = intents
-	b.properties = properties
 	if b.Handler != nil {
 		h := reflect.ValueOf(b.Handler).Elem()
 		t := h.Type()
@@ -120,9 +119,9 @@ func (bot *Bot) Connect() {
 		payload.Op = OpCodeIdentify
 		err = payload.WrapData(&OpCodeIdentifyMessage{
 			Token:      bot.Authorization(),
-			Intents:    bot.intents,
+			Intents:    bot.Intents,
 			Shard:      bot.shard,
-			Properties: bot.properties,
+			Properties: bot.Properties,
 		})
 		if err != nil {
 			log.Warnln("[bot] 包装 Identify 时出现错误:", err)
