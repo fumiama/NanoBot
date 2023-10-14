@@ -1,7 +1,6 @@
 package nano
 
 import (
-	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"net"
@@ -76,9 +75,9 @@ func (bot *Bot) reveive() (payload WebsocketPayload, err error) {
 // Connect 连接到 Gateway + 鉴权连接
 //
 // https://bot.q.qq.com/wiki/develop/api/gateway/reference.html#_1-%E8%BF%9E%E6%8E%A5%E5%88%B0-gateway
-func (bot *Bot) Connect() {
+func (bot *Bot) Connect() *Bot {
 	network, address := resolveURI(bot.gateway)
-	log.Infoln("[bot] 开始尝试连接到网关:", network, ", AppID:", bot.AppID)
+	log.Infoln("[bot] 开始尝试连接到网关:", address, ", AppID:", bot.AppID)
 	dialer := websocket.Dialer{
 		NetDial: func(_, addr string) (net.Conn, error) {
 			if network == "unix" {
@@ -91,7 +90,7 @@ func (bot *Bot) Connect() {
 					addr = BytesToString(filepath)
 				}
 			}
-			return tls.Dial(network, addr, websocket.DefaultDialer.TLSClientConfig) // support unix socket transport
+			return net.Dial(network, addr) // support unix socket transport
 		},
 	}
 	for {
@@ -153,9 +152,10 @@ func (bot *Bot) Connect() {
 		}
 		break
 	}
-	clients.Store(bot.ready.User.ID, bot)
+	clients.Store(bot.AppID, bot)
 	log.Infoln("[bot] 连接到网关成功, 用户名:", bot.ready.User.Username)
 	go bot.doheartbeat()
+	return bot
 }
 
 // doheartbeat 按指定间隔进行心跳包发送
@@ -179,5 +179,22 @@ func (bot *Bot) doheartbeat() {
 		if err != nil {
 			log.Warnln("[bot] 发送心跳时出现错误:", err)
 		}
+	}
+}
+
+// Listen 监听事件
+func (bot *Bot) Listen() {
+	log.Infoln("[bot] 开始监听", bot.ready.User.Username, "的事件")
+	payload := WebsocketPayload{}
+	for {
+		err := bot.conn.ReadJSON(&payload)
+		if err != nil { // reconnect
+			clients.Delete(bot.AppID)
+			log.Warn("[bot]", bot.ready.User.Username, "的网关连接断开...")
+			time.Sleep(time.Millisecond * time.Duration(3))
+			bot.Connect()
+			continue
+		}
+		log.Debugln("[bot] 接收到事件:", payload.Op, ", 类型:", payload.T)
 	}
 }

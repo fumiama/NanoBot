@@ -19,7 +19,7 @@ type WebsocketPayload struct {
 // GetHeartbeatInterval OpCodeHello 获得心跳周期 单位毫秒
 func (wp *WebsocketPayload) GetHeartbeatInterval() (uint32, error) {
 	if wp.Op != OpCodeHello {
-		return 0, errors.New(getThisFuncName() + " unexpected OpCode " + strconv.Itoa(int(wp.Op)))
+		return 0, errors.New(getThisFuncName() + " unexpected OpCode " + strconv.Itoa(int(wp.Op)) + ", T: " + wp.T + ", D: " + BytesToString(wp.D))
 	}
 	data := &struct {
 		H uint32 `json:"heartbeat_interval"`
@@ -52,11 +52,11 @@ type EventReady struct {
 // GetEventReady OpCodeDispatch READY
 func (wp *WebsocketPayload) GetEventReady() (er EventReady, err error) {
 	if wp.Op != OpCodeDispatch {
-		err = errors.New(getThisFuncName() + " unexpected OpCode " + strconv.Itoa(int(wp.Op)))
+		err = errors.New(getThisFuncName() + " unexpected OpCode " + strconv.Itoa(int(wp.Op)) + ", T: " + wp.T + ", D: " + BytesToString(wp.D))
 		return
 	}
 	if wp.T != "READY" {
-		err = errors.New(getThisFuncName() + " unexpected event type " + wp.T)
+		err = errors.New(getThisFuncName() + " unexpected event type " + wp.T + ", T: " + wp.T + ", D: " + BytesToString(wp.D))
 		return
 	}
 	err = json.Unmarshal(wp.D, &er)

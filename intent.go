@@ -18,4 +18,7 @@ const (
 	IntentAll = IntentGuilds | IntentGuildMembers | IntentGuildMessages | IntentGuildMessageReactions |
 		IntentDirectMessage | IntentOpenForumsEvent | IntentAudioOrLiveChannelMember | IntentInteraction |
 		IntentMessageAudit | IntentForumsEvent | IntentAudioAction | IntentPublicGuildMessages
+	IntentPublic = IntentGuilds | IntentGuildMembers | IntentGuildMessageReactions |
+		IntentDirectMessage | IntentOpenForumsEvent | IntentAudioOrLiveChannelMember | IntentInteraction |
+		IntentMessageAudit | IntentAudioAction | IntentPublicGuildMessages
 )

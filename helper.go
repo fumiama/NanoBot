@@ -23,12 +23,12 @@ func getFuncNameWithSkip(n int) string {
 
 // getThisFuncName 获取正在执行的函数名
 func getThisFuncName() string {
-	return getFuncNameWithSkip(1)
+	return getFuncNameWithSkip(2)
 }
 
 // getCallerFuncName 获取调用者函数名
 func getCallerFuncName() string {
-	return getFuncNameWithSkip(2)
+	return getFuncNameWithSkip(3)
 }
 
 // MessageEscape 消息转义
