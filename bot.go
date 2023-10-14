@@ -158,7 +158,7 @@ func (bot *Bot) Connect() {
 	go bot.doheartbeat()
 }
 
-// doheartbeat 按指定间隔进行心跳包收发
+// doheartbeat 按指定间隔进行心跳包发送
 func (bot *Bot) doheartbeat() {
 	payload := struct {
 		Op OpCode  `json:"op"`
