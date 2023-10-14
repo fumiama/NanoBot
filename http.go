@@ -16,6 +16,9 @@ import (
 	base14 "github.com/fumiama/go-base16384"
 )
 
+// HTTPRequsetConstructer ...
+type HTTPRequsetConstructer func(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error)
+
 func newHTTPEndpointRequestWithAuth(method, contenttype, ep string, auth string, body io.Reader) (req *http.Request, err error) {
 	req, err = http.NewRequest(method, OpenAPI+ep, body)
 	if err != nil {

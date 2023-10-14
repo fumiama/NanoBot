@@ -28,4 +28,19 @@ type Handler struct {
 	OnMessageDelete func(s int, bot *Bot, d *Message)
 	// GUILD_MESSAGE_REACTIONS (1 << 10)
 
+	OnMessageReactionAdd    func(s int, bot *Bot, d *MessageReaction)
+	OnMessageReactionRemove func(s int, bot *Bot, d *MessageReaction)
+	// DIRECT_MESSAGE (1 << 12)
+
+	OnDirectMessageCreate func(s int, bot *Bot, d *Message)
+	OnDirectMessageDelete func(s int, bot *Bot, d *Message)
+	// OPEN_FORUMS_EVENT (1 << 18)      // 论坛事件, 此为公域的论坛事件
+
+	OnOpenForumThreadCreate func(s int, bot *Bot, d *Thread)
+	OnOpenForumThreadUpdate func(s int, bot *Bot, d *Thread)
+	OnOpenForumThreadDelete func(s int, bot *Bot, d *Thread)
+	OnOpenForumPostCreate   func(s int, bot *Bot, d *Post)
+	OnOpenForumPostDelete   func(s int, bot *Bot, d *Post)
+	OnOpenForumReplyCreate  func(s int, bot *Bot, d *Reply)
+	OnOpenForumReplyDelete  func(s int, bot *Bot, d *Reply)
 }
