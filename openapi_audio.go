@@ -49,3 +49,13 @@ func (bot *Bot) OpenMicInChannel(id string) error {
 func (bot *Bot) CloseMicInChannel(id string) error {
 	return bot.DeleteOpenAPI("/channels/"+id+"/mic", "", nil)
 }
+
+// AudioLiveChannelUsersChange 音视频/直播子频道成员进出事件
+//
+// https://bot.q.qq.com/wiki/develop/api/gateway/audio_or_live_channel_member.html
+type AudioLiveChannelUsersChange struct {
+	GuildID     string `json:"guild_id"`
+	ChannelID   string `json:"channel_id"`
+	ChannelType int    `json:"channel_type"`
+	UserID      string `json:"user_id"`
+}

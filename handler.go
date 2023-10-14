@@ -43,4 +43,34 @@ type Handler struct {
 	OnOpenForumPostDelete   func(s int, bot *Bot, d *Post)
 	OnOpenForumReplyCreate  func(s int, bot *Bot, d *Reply)
 	OnOpenForumReplyDelete  func(s int, bot *Bot, d *Reply)
+	// AUDIO_OR_LIVE_CHANNEL_MEMBER (1 << 19)  // 音视频/直播子频道成员进出事件
+
+	OnAudioOrLiveChannelMemberEnter func(s int, bot *Bot, d *AudioLiveChannelUsersChange)
+	OnAudioOrLiveChannelMemberExit  func(s int, bot *Bot, d *AudioLiveChannelUsersChange)
+	// INTERACTION (1 << 26) 事件结构不明
+
+	// MESSAGE_AUDIT (1 << 27)
+
+	OnMessageAuditPass   func(s int, bot *Bot, d *MessageAudited)
+	OnMessageAuditReject func(s int, bot *Bot, d *MessageAudited)
+	// FORUMS_EVENT (1 << 28)  // 论坛事件，仅 *私域* 机器人能够设置此 intents。
+
+	OnForumThreadCreate       func(s int, bot *Bot, d *Thread)
+	OnForumThreadUpdate       func(s int, bot *Bot, d *Thread)
+	OnForumThreadDelete       func(s int, bot *Bot, d *Thread)
+	OnForumPostCreate         func(s int, bot *Bot, d *Post)
+	OnForumPostDelete         func(s int, bot *Bot, d *Post)
+	OnForumReplyCreate        func(s int, bot *Bot, d *Reply)
+	OnForumReplyDelete        func(s int, bot *Bot, d *Reply)
+	OnForumPublishAuditResult func(s int, bot *Bot, d *AuditResult)
+	// AUDIO_ACTION (1 << 29)
+
+	OnAudioStart  func(s int, bot *Bot, d *AudioAction)
+	OnAudioFinish func(s int, bot *Bot, d *AudioAction)
+	OnAudioOnMic  func(s int, bot *Bot, d *AudioAction)
+	OnAudioOffMic func(s int, bot *Bot, d *AudioAction)
+	// PUBLIC_GUILD_MESSAGES (1 << 30) // 消息事件，此为公域的消息事件
+
+	OnAtMessageCreate     func(s int, bot *Bot, d *Message)
+	OnPublicMessageDelete func(s int, bot *Bot, d *Message)
 }
