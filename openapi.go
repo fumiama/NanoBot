@@ -11,6 +11,23 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	// StandardAPI 正式环境接口域名
+	StandardAPI = `https://api.sgroup.qq.com`
+	// SandboxAPI 沙箱环境接口域名
+	SandboxAPI = `https://sandbox.api.sgroup.qq.com`
+)
+
+var (
+	OpenAPI = StandardAPI // OpenAPI 实际使用的 API, 默认 StandardAPI, 可自行赋值配置
+)
+
+// CodeMessageBase 各种消息都有的 code + message 基类
+type CodeMessageBase struct {
+	C int    `json:"code"`
+	M string `json:"message"`
+}
+
 func checkrespbaseunsafe(ptr any) error {
 	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
 	if respbase.C != 0 {
