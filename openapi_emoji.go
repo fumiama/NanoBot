@@ -10,6 +10,10 @@ type Emoji struct {
 	Type uint32 `json:"type"`
 }
 
+func (e *Emoji) String() string {
+	return "<emoji:" + e.ID + ">"
+}
+
 // MessageReaction https://bot.q.qq.com/wiki/develop/api/openapi/reaction/model.html#messagereaction
 type MessageReaction struct {
 	UserID    string          `json:"user_id"`
@@ -20,12 +24,12 @@ type MessageReaction struct {
 }
 
 // ReactionTargetType https://bot.q.qq.com/wiki/develop/api/openapi/reaction/model.html#reactiontargettype
-type ReactionTargetType int
+type ReactionTargetType string
 
 // ReactionTarget https://bot.q.qq.com/wiki/develop/api/openapi/reaction/model.html#reactiontarget
 type ReactionTarget struct {
 	ID   string             `json:"id"`
-	Type ReactionTargetType `json:"type"`
+	Type ReactionTargetType `json:"type"` // 实际是 string 而非 int
 }
 
 // GiveMessageReaction 对消息 message_id 进行表情表态

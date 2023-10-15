@@ -30,16 +30,16 @@ type Bot struct {
 	Intents    uint32          // Intents 欲接收的事件
 	Properties json.RawMessage // Properties 一些环境变量, 目前没用
 
-	gateway   string                       // gateway 获得的网关
-	shard     [2]byte                      // shard 分片
-	seq       uint32                       // seq 最新的 s
-	handlers  map[string]GeneralHandleType // handlers 方便调用的 handler
-	mu        sync.Mutex                   // 写锁
-	conn      *websocket.Conn              // conn 目前的 wss 连接
-	heartbeat uint32                       // heartbeat 心跳周期, 单位毫秒
-	hbonce    sync.Once                    // hbonce 保证仅执行一次 heartbeat
+	gateway   string                      // gateway 获得的网关
+	shard     [2]byte                     // shard 分片
+	seq       uint32                      // seq 最新的 s
+	handlers  map[string]eventHandlerType // handlers 方便调用的 handler
+	mu        sync.Mutex                  // 写锁
+	conn      *websocket.Conn             // conn 目前的 wss 连接
+	heartbeat uint32                      // heartbeat 心跳周期, 单位毫秒
+	hbonce    sync.Once                   // hbonce 保证仅执行一次 heartbeat
 
-	ready EventReady //
+	ready EventReady // ready 连接成功后下发的 bot 基本信息
 }
 
 // Init 初始化, 只需执行一次
@@ -49,7 +49,7 @@ func (b *Bot) Init(gateway string, shard [2]byte) *Bot {
 	if b.Handler != nil {
 		h := reflect.ValueOf(b.Handler).Elem()
 		t := h.Type()
-		b.handlers = make(map[string]GeneralHandleType, h.NumField()*4)
+		b.handlers = make(map[string]eventHandlerType, h.NumField()*4)
 		for i := 0; i < h.NumField(); i++ {
 			f := h.Field(i)
 			if f.IsZero() {
@@ -58,7 +58,10 @@ func (b *Bot) Init(gateway string, shard [2]byte) *Bot {
 			tp := t.Field(i).Name[2:] // skip On
 			log.Infoln(getLogHeader(), "注册处理函数", tp)
 			handler := f.Interface()
-			b.handlers[tp] = *(*GeneralHandleType)(unsafe.Add(unsafe.Pointer(&handler), unsafe.Sizeof(uintptr(0))))
+			b.handlers[tp] = eventHandlerType{
+				h: *(*generalHandleType)(unsafe.Add(unsafe.Pointer(&handler), unsafe.Sizeof(uintptr(0)))),
+				t: t.Field(i).Type.In(2).Elem(),
+			}
 		}
 	}
 	return b
@@ -257,6 +260,8 @@ func (bot *Bot) Listen() {
 			switch payload.T {
 			case "RESUMED":
 				log.Infoln(getLogHeader(), bot.ready.User.Username, "的网关连接恢复完成")
+			default:
+				bot.processEvent(&payload)
 			}
 		case OpCodeHeartbeat: // Send/Receive
 			log.Debugln(getLogHeader(), "收到服务端推送心跳, 间隔:", time.Since(lastheartbeat))
@@ -280,6 +285,8 @@ func (bot *Bot) Listen() {
 			log.Debugln(getLogHeader(), "收到心跳返回, 间隔:", time.Since(lastheartbeat))
 			lastheartbeat = time.Now()
 		case OpCodeHTTPCallbackACK: // Reply
+		default:
+			log.Warnln(getLogHeader(), "忽略未知事件, 序号:", payload.S, ", Op:", payload.Op, ", 类型:", payload.T, ", 数据:", BytesToString(payload.D))
 		}
 	}
 }

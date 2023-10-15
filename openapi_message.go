@@ -56,7 +56,13 @@ type MessageEmbedField struct {
 
 // MessageAttachment https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#messageattachment
 type MessageAttachment struct {
-	URL string `json:"url"`
+	ContentType string `json:"content_type,omitempty"`
+	Filename    string `json:"filename,omitempty"`
+	Height      int    `json:"height,omitempty"`
+	ID          string `json:"id,omitempty"`
+	Size        int    `json:"size,omitempty"`
+	URL         string `json:"url,omitempty"`
+	Width       int    `json:"width,omitempty"`
 }
 
 // MessageArk https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#messageark
