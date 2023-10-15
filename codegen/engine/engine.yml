@@ -1,0 +1,69 @@
+emptyon:
+  - Message
+
+  - GuildCreate
+  - GuildUpdate
+  - GuildDelete
+  - ChannelCreate
+  - ChannelUpdate
+  - ChannelDelete
+
+  - GuildMemberAdd
+  - GuildMemberUpdate
+  - GuildMemberRemove
+
+  - MessageCreate
+  - MessageDelete
+
+  - MessageReactionAdd
+  - MessageReactionRemove
+
+  - DirectMessageCreate
+  - DirectMessageDelete
+
+  - OpenForumThreadCreate
+  - OpenForumThreadUpdate
+  - OpenForumThreadDelete
+  - OpenForumPostCreate
+  - OpenForumPostDelete
+  - OpenForumReplyCreate
+  - OpenForumReplyDelete
+
+  - AudioOrLiveChannelMemberEnter
+  - AudioOrLiveChannelMemberExit
+
+  - MessageAuditPass
+  - MessageAuditReject
+
+  - ForumThreadCreate
+  - ForumThreadUpdate
+  - ForumThreadDelete
+  - ForumPostCreate
+  - ForumPostDelete
+  - ForumReplyCreate
+  - ForumReplyDelete
+  - ForumPublishAuditResult
+
+  - AudioStart
+  - AudioFinish
+  - AudioOnMic
+  - AudioOffMic
+
+  - AtMessageCreate
+  - PublicMessageDelete
+
+ruleon:
+  Message:
+    - Message
+  Rule:
+    Prefix: [prefix, string]
+    Suffix: [suffix, string]
+    Command: [commands, string]
+    Regex: [regexPattern, string]
+    Keyword: [keyword, string]
+    FullMatch: [src, string]
+    FullMatchGroup: [src, "[]string"]
+    KeywordGroup: [keywords, "[]string"]
+    CommandGroup: [commands, "[]string"]
+    PrefixGroup: [prefix, "[]string"]
+    SuffixGroup: [suffix, "[]string"]

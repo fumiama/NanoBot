@@ -143,6 +143,11 @@ func (bot *Bot) Authorization() string {
 	return "Bot " + bot.AppID + "." + bot.Token
 }
 
+// AtMe 返回 "<@!"+bot.ready.User.ID+">"
+func (bot *Bot) AtMe() string {
+	return "<@!" + bot.ready.User.ID + ">"
+}
+
 // receive 收一个 payload
 func (bot *Bot) reveive() (payload WebsocketPayload, err error) {
 	err = bot.conn.ReadJSON(&payload)

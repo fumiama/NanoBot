@@ -14,6 +14,18 @@ type eventHandlerType struct {
 	t reflect.Type
 }
 
+var types map[string]reflect.Type // types 便于反射初始化的 types
+
+func init() {
+	h := reflect.ValueOf(&Handler{}).Elem()
+	t := h.Type()
+	types = make(map[string]reflect.Type, h.NumField()*4)
+	for i := 0; i < h.NumField(); i++ {
+		tp := t.Field(i).Name[2:] // skip On
+		types[tp] = t.Field(i).Type.In(2).Elem()
+	}
+}
+
 // Handler 事件订阅
 //
 // https://bot.q.qq.com/wiki/develop/api/gateway/intents.html
