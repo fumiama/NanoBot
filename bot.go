@@ -6,12 +6,14 @@ import (
 	"net"
 	"net/http"
 	"reflect"
+	"strconv"
 	"sync"
 	"time"
 	"unsafe"
 
 	"github.com/RomiChan/syncx"
 	"github.com/RomiChan/websocket"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,6 +37,7 @@ type Bot struct {
 	mu        sync.Mutex                   // 写锁
 	conn      *websocket.Conn              // conn 目前的 wss 连接
 	heartbeat uint32                       // heartbeat 心跳周期, 单位毫秒
+	hbonce    sync.Once                    // hbonce 保证仅执行一次 heartbeat
 
 	ready EventReady //
 }
@@ -152,9 +155,11 @@ func (bot *Bot) Connect() *Bot {
 		}
 		break
 	}
-	clients.Store(bot.AppID, bot)
+	clients.Store(bot.Token, bot)
 	log.Infoln("[bot] 连接到网关成功, 用户名:", bot.ready.User.Username)
-	go bot.doheartbeat()
+	bot.hbonce.Do(func() {
+		go bot.doheartbeat()
+	})
 	return bot
 }
 
@@ -182,6 +187,48 @@ func (bot *Bot) doheartbeat() {
 	}
 }
 
+// Resume 恢复连接
+//
+// https://bot.q.qq.com/wiki/develop/api/gateway/reference.html#_4-%E6%81%A2%E5%A4%8D%E8%BF%9E%E6%8E%A5
+func (bot *Bot) Resume() error {
+	network, address := resolveURI(bot.gateway)
+	dialer := websocket.Dialer{
+		NetDial: func(_, addr string) (net.Conn, error) {
+			if network == "unix" {
+				host, _, err := net.SplitHostPort(addr)
+				if err != nil {
+					host = addr
+				}
+				filepath, err := base64.RawURLEncoding.DecodeString(host)
+				if err == nil {
+					addr = BytesToString(filepath)
+				}
+			}
+			return net.Dial(network, addr) // support unix socket transport
+		},
+	}
+	conn, resp, err := dialer.Dial(address, http.Header{})
+	if err != nil {
+		return err
+	}
+	bot.conn = conn
+	_ = resp.Body.Close()
+	payload := WebsocketPayload{Op: OpCodeResume}
+	payload.WrapData(&struct {
+		T string `json:"token"`
+		S string `json:"session_id_i_stored"`
+		Q uint32 `json:"seq"`
+	}{bot.Authorization(), bot.ready.SessionID, bot.seq})
+	payload, err = bot.reveive()
+	if err != nil {
+		return err
+	}
+	if payload.Op == OpCodeDispatch && payload.T == "RESUMED" {
+		return nil
+	}
+	return errors.New(getThisFuncName() + " unexpected OpCode " + strconv.Itoa(int(payload.Op)) + ", T: " + payload.T + ", D: " + BytesToString(payload.D))
+}
+
 // Listen 监听事件
 func (bot *Bot) Listen() {
 	log.Infoln("[bot] 开始监听", bot.ready.User.Username, "的事件")
@@ -189,12 +236,19 @@ func (bot *Bot) Listen() {
 	for {
 		err := bot.conn.ReadJSON(&payload)
 		if err != nil { // reconnect
-			clients.Delete(bot.AppID)
-			log.Warn("[bot]", bot.ready.User.Username, "的网关连接断开...")
-			time.Sleep(time.Millisecond * time.Duration(3))
-			bot.Connect()
+			clients.Delete(bot.Token)
+			log.Warn("[bot]", bot.ready.User.Username, "的网关连接断开, 尝试恢复...")
+			for {
+				time.Sleep(time.Millisecond * time.Duration(3))
+				err = bot.Resume()
+				if err == nil {
+					break
+				}
+				log.Warn("[bot]", bot.ready.User.Username, "的网关连接恢复失败:", err)
+			}
+			clients.Store(bot.Token, bot)
 			continue
 		}
-		log.Debugln("[bot] 接收到事件:", payload.Op, ", 类型:", payload.T)
+		log.Debugln("[bot] 接收到第", payload.S, "个事件:", payload.Op, ", 类型:", payload.T)
 	}
 }
