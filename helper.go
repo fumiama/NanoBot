@@ -8,27 +8,39 @@ import (
 	"unsafe"
 )
 
-func getFuncNameWithSkip(n int) string {
-	pc, _, _, ok := runtime.Caller(n)
+func getFuncAndFileNameWithSkip(n int) (string, string) {
+	pc, fn, _, ok := runtime.Caller(n)
 	if !ok {
-		return ""
+		return "", ""
+	}
+	i := strings.LastIndex(fn, "/") + 1
+	if i > 0 {
+		fn = strings.TrimSuffix(fn[i:], ".go")
 	}
 	fullname := runtime.FuncForPC(pc).Name()
-	i := strings.LastIndex(fullname, ".") + 1
+	i = strings.LastIndex(fullname, ".") + 1
 	if i <= 0 || i >= len(fullname) {
-		return fullname
+		return fullname, fn
 	}
-	return fullname[i:]
+	return fullname[i:], fn
 }
 
 // getThisFuncName 获取正在执行的函数名
 func getThisFuncName() string {
-	return getFuncNameWithSkip(2)
+	x, _ := getFuncAndFileNameWithSkip(2)
+	return x
 }
 
 // getCallerFuncName 获取调用者函数名
 func getCallerFuncName() string {
-	return getFuncNameWithSkip(3)
+	x, _ := getFuncAndFileNameWithSkip(3)
+	return x
+}
+
+// getLogHeader [文件名.函数名]
+func getLogHeader() string {
+	funcname, filename := getFuncAndFileNameWithSkip(2)
+	return "[" + filename + "." + funcname + "]"
 }
 
 // MessageEscape 消息转义

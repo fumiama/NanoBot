@@ -12,8 +12,13 @@ import (
 type WebsocketPayload struct {
 	Op OpCode          `json:"op"`
 	D  json.RawMessage `json:"d,omitempty"`
-	S  int             `json:"s,omitempty"`
+	S  uint32          `json:"s,omitempty"`
 	T  string          `json:"t,omitempty"`
+}
+
+// Reset 恢复到 0 值
+func (wp *WebsocketPayload) Reset() {
+	*wp = WebsocketPayload{}
 }
 
 // GetHeartbeatInterval OpCodeHello 获得心跳周期 单位毫秒
