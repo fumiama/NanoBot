@@ -3,6 +3,7 @@ package nano
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net"
 	"net/http"
 	"reflect"
@@ -28,18 +29,88 @@ type Bot struct {
 	Timeout    time.Duration   // Timeout is API 调用超时
 	Handler    *Handler        // Handler 注册对各种事件的处理
 	Intents    uint32          // Intents 欲接收的事件
+	shard      [2]byte         // shard 分片
+	ShardIndex uint16          // ShardIndex 本连接为第几个分片, 默认 1, 0 为不使用分片
 	Properties json.RawMessage // Properties 一些环境变量, 目前没用
 
 	gateway   string                      // gateway 获得的网关
-	shard     [2]byte                     // shard 分片
 	seq       uint32                      // seq 最新的 s
+	heartbeat uint32                      // heartbeat 心跳周期, 单位毫秒
 	handlers  map[string]eventHandlerType // handlers 方便调用的 handler
 	mu        sync.Mutex                  // 写锁
 	conn      *websocket.Conn             // conn 目前的 wss 连接
-	heartbeat uint32                      // heartbeat 心跳周期, 单位毫秒
 	hbonce    sync.Once                   // hbonce 保证仅执行一次 heartbeat
 
 	ready EventReady // ready 连接成功后下发的 bot 基本信息
+}
+
+// getinitinfo 获得 gateway 和 shard
+func (b *Bot) getinitinfo() (gw string, shard [2]byte, err error) {
+	shard[1] = 1
+	if b.ShardIndex == 0 {
+		gw, err = b.GetGeneralWSSGateway()
+		if err != nil {
+			return
+		}
+	} else {
+		var sgw *ShardWSSGateway
+		sgw, err = b.GetShardWSSGateway()
+		if err != nil {
+			return
+		}
+		if sgw.Shards <= int(b.ShardIndex) {
+			err = errors.New("shard index " + strconv.Itoa(int(b.ShardIndex)) + " >= suggested size " + strconv.Itoa(sgw.Shards))
+			return
+		}
+		gw = sgw.URL
+		shard[0] = byte(b.ShardIndex)
+		shard[1] = byte(sgw.Shards)
+	}
+	return
+}
+
+// Start clients without blocking
+func Start(bots ...*Bot) error {
+	for _, b := range bots {
+		gw, shard, err := b.getinitinfo()
+		if err != nil {
+			return err
+		}
+		go b.Init(gw, shard).Connect().Listen()
+	}
+	return nil
+}
+
+// Run clients and block self in listening last one
+func Run(bots ...*Bot) error {
+	var b *Bot
+	switch len(bots) {
+	case 0:
+		return nil
+	case 1:
+		b = bots[0]
+		gw, shard, err := b.getinitinfo()
+		if err != nil {
+			return err
+		}
+		b.Init(gw, shard)
+	default:
+		for _, b := range bots[:len(bots)-1] {
+			gw, shard, err := b.getinitinfo()
+			if err != nil {
+				return err
+			}
+			go b.Init(gw, shard).Connect().Listen()
+		}
+		b = bots[len(bots)-1]
+		gw, shard, err := b.getinitinfo()
+		if err != nil {
+			return err
+		}
+		b.Init(gw, shard)
+	}
+	b.Connect().Listen()
+	return nil
 }
 
 // Init 初始化, 只需执行一次
