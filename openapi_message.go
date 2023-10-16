@@ -66,9 +66,9 @@ func (m *Message) String() string {
 		sb.WriteString(", 用户: 未知")
 	}
 	if m.Content == "" {
-		sb.WriteString("无文本")
+		sb.WriteString(", 无文本")
 	} else {
-		sb.WriteString("文本: ")
+		sb.WriteString(", 文本: ")
 		if m.MentionEveryone {
 			sb.WriteString("[@全体]")
 		}
@@ -216,7 +216,7 @@ func (mp *MessagePost) String() string {
 		sb.WriteString(", 回应消息: ")
 		sb.WriteString(mp.ReplyMessageID)
 	}
-	if mp.ReplyMessageID != "" {
+	if mp.ReplyEventID != "" {
 		sb.WriteString(", 回应事件: ")
 		sb.WriteString(mp.ReplyEventID)
 	}
