@@ -82,6 +82,9 @@ func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (*Message, error) {
 			MessageID: msg.ID,
 		}
 	}
+	if msg.SrcGuildID != "" { // dms
+		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
+	}
 	return ctx.Caller.PostMessageToChannel(msg.ChannelID, post)
 }
 
@@ -97,6 +100,9 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 		}
 	}
 	post.Content = fmt.Sprint(printable...)
+	if msg.SrcGuildID != "" { // dms
+		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
+	}
 	return ctx.Caller.PostMessageToChannel(msg.ChannelID, post)
 }
 
@@ -117,6 +123,9 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Mes
 		}
 	}
 	post.Content = fmt.Sprint(caption...)
+	if msg.SrcGuildID != "" { // dms
+		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
+	}
 	return ctx.Caller.PostMessageToChannel(msg.ChannelID, post)
 }
 

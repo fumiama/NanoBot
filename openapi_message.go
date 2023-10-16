@@ -45,6 +45,7 @@ func (m *Message) String() string {
 	sb.WriteByte('[')
 	sb.WriteString(m.SeqInChannel)
 	sb.WriteByte(']')
+	sb.WriteString(m.ID)
 	sb.WriteString(" ｷﾞﾙﾄﾞ: ")
 	sb.WriteString(m.GuildID)
 	if m.SrcGuildID != "" {
