@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unsafe"
 
 	"github.com/FloatTech/floatbox/process"
 	ctrl "github.com/FloatTech/zbpctrl"
@@ -19,7 +18,7 @@ func newctrl(service string, o *ctrl.Options[*Ctx]) Rule {
 		ctx.State["manager"] = c
 		gid, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
 		uid, _ := strconv.ParseUint(ctx.Message.Author.ID, 10, 64)
-		return c.Handler(uintptr(unsafe.Pointer(ctx)), int64(gid), int64(uid))
+		return c.Handler(int64(gid), int64(uid))
 	}
 }
 
