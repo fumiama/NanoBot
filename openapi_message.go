@@ -3,6 +3,7 @@ package nano
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -148,7 +149,7 @@ func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error)
 		if xi.IsZero() {
 			continue
 		}
-		tag := t.Field(i).Tag.Get("json")
+		tag, _, _ := strings.Cut(t.Field(i).Tag.Get("json"), ",")
 		if tag == "-" {
 			tag = "file_image"
 		}
