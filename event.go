@@ -74,7 +74,6 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 	switch tp {
 	case "Message":
 		ctx.Message = (*Message)(x.UnsafePointer())
-		ctx.Message.Content = MessageUnescape(ctx.Message.Content)
 		log.Infoln(getLogHeader(), "收到 Guild:", ctx.Message.GuildID, ", Channel:", ctx.Message.ChannelID, "消息", ctx.Message.Author.ID, ":", ctx.Message.Content)
 	}
 	go match(ctx, matchers)

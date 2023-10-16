@@ -25,7 +25,7 @@ func PrefixGroupRule(prefixes ...string) Rule {
 				return false
 			}
 			for _, prefix := range prefixes {
-				if strings.HasPrefix(msg.Content, prefix) {
+				if strings.HasPrefix(msg.Content, MessageEscape(prefix)) {
 					ctx.State["prefix"] = prefix
 					arg := strings.TrimLeft(msg.Content[len(prefix):], " ")
 					ctx.State["args"] = arg
@@ -57,7 +57,7 @@ func SuffixGroupRule(suffixes ...string) Rule {
 				return false
 			}
 			for _, suffix := range suffixes {
-				if strings.HasSuffix(msg.Content, suffix) {
+				if strings.HasSuffix(msg.Content, MessageEscape(suffix)) {
 					ctx.State["suffix"] = suffix
 					arg := strings.TrimRight(msg.Content[:len(msg.Content)-len(suffix)], " ")
 					ctx.State["args"] = arg
@@ -102,7 +102,7 @@ func CommandGroupRule(commands ...string) Rule {
 			return false
 		}
 		for _, command := range commands {
-			if strings.HasPrefix(cmdMessage, command) {
+			if strings.HasPrefix(cmdMessage, MessageEscape(command)) {
 				ctx.State["command"] = command
 				ctx.State["args"] = args
 				return true
@@ -158,7 +158,7 @@ func KeywordGroupRule(src ...string) Rule {
 				return false
 			}
 			for _, str := range src {
-				if strings.Contains(msg.Content, str) {
+				if strings.Contains(msg.Content, MessageEscape(str)) {
 					ctx.State["keyword"] = str
 					return true
 				}
@@ -184,7 +184,7 @@ func FullMatchGroupRule(src ...string) Rule {
 				return false
 			}
 			for _, str := range src {
-				if str == msg.Content {
+				if MessageEscape(str) == msg.Content {
 					ctx.State["matched"] = msg.Content
 					return true
 				}
@@ -442,7 +442,7 @@ func MustProvidePhoto(onmessage string, needphohint, failhint string) Rule {
 			}
 			return false
 		case newCtx := <-next:
-			ctx.State["photos"] = newCtx.State["photos"]
+			ctx.State["attachments"] = newCtx.State["attachments"]
 			ctx.Event = newCtx.Event
 			return true
 		}
