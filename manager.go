@@ -12,6 +12,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	// StorageFolder 插件控制数据目录
+	StorageFolder = "data/control/"
+	// Md5File ...
+	Md5File = StorageFolder + "stor.spb"
+	dbfile  = StorageFolder + "plugins.db"
+)
+
 type Manager ctrl.Manager[*Ctx]
 
 var (
@@ -19,7 +27,7 @@ var (
 	priomap   = make(map[int]string)    // priomap is map[prio]service
 	foldermap = make(map[string]string) // foldermap is map[folder]service
 	prio      uint64
-	m         = ctrl.NewManager[*Ctx]("data/control/plugins.db")
+	m         = ctrl.NewManager[*Ctx](dbfile)
 )
 
 // Register 注册插件控制器

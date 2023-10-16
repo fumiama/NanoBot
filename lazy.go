@@ -16,5 +16,5 @@ func (e *Engine) GetLazyData(filename string, isDataMustEqual bool) ([]byte, err
 	if !strings.HasSuffix(e.datafolder, "/") || !strings.HasPrefix(e.datafolder, "data/") || !unicode.IsUpper(rune(e.datafolder[5])) {
 		return nil, errors.New("invalid datafolder")
 	}
-	return file.GetLazyData(e.datafolder+filename, "data/control/stor.spb", isDataMustEqual)
+	return file.GetLazyData(e.datafolder+filename, Md5File, isDataMustEqual)
 }
