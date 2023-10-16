@@ -47,14 +47,11 @@ func init() {
 					msg = ctx.Caller.ready.User.Username + "已经在工作了哦~"
 					break
 				}
-				if SuperUserPermission(ctx) {
-					err := m.Response(int64(grp))
-					if err == nil {
-						msg = ctx.Caller.ready.User.Username + "将开始在此工作啦~"
-					} else {
-						msg = "ERROR: " + err.Error()
-					}
-					break
+				err := m.Response(int64(grp))
+				if err == nil {
+					msg = ctx.Caller.ready.User.Username + "将开始在此工作啦~"
+				} else {
+					msg = "ERROR: " + err.Error()
 				}
 			case "沉默", "silence":
 				if !m.CanResponse(int64(grp)) {
@@ -66,9 +63,6 @@ func init() {
 					msg = ctx.Caller.ready.User.Username + "将开始休息啦~"
 				} else {
 					msg = "ERROR: " + err.Error()
-				}
-				if SuperUserPermission(ctx) {
-					break
 				}
 			default:
 				msg = "ERROR: bad command\"" + fmt.Sprint(ctx.State["command"]) + "\""
