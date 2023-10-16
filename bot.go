@@ -48,7 +48,7 @@ type Bot struct {
 // getinitinfo 获得 gateway 和 shard
 func (b *Bot) getinitinfo() (gw string, shard [2]byte, err error) {
 	shard[1] = 1
-	if b.client != nil {
+	if b.client == nil {
 		b.client = http.DefaultClient
 	}
 	if b.ShardIndex == 0 {
