@@ -8,10 +8,12 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"net/url"
 	"os"
 	"reflect"
 	"strings"
+	_ "unsafe"
 
 	base14 "github.com/fumiama/go-base16384"
 )
@@ -98,6 +100,9 @@ func WriteBodyFromJSON(ptr any) *bytes.Buffer {
 	return buf
 }
 
+//go:linkname escapeQuotes mime/multipart.escapeQuotes
+func escapeQuotes(s string) string
+
 // WriteBodyByMultipartFormData 使用 multipart/form-data 上传
 func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) {
 	if len(params)%2 != 0 {
@@ -116,11 +121,16 @@ func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) 
 		if rx.IsZero() {
 			continue
 		}
-		r, err := w.CreateFormField(fieldname)
-		if err != nil {
-			return nil, "", err
-		}
+		h := make(textproto.MIMEHeader)
+		h.Set("Content-Disposition",
+			fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
+				escapeQuotes(fieldname), escapeQuotes(fieldname)))
 		if rx.Kind() == reflect.Pointer && rx.Elem().Kind() == reflect.Struct { // 使用 json 编码
+			h.Set("Content-Type", "application/octet-stream")
+			r, err := w.CreatePart(h)
+			if err != nil {
+				return nil, "", err
+			}
 			err = json.NewEncoder(r).Encode(x)
 			if err != nil {
 				return nil, "", err
@@ -130,6 +140,11 @@ func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) 
 		switch o := x.(type) {
 		case string:
 			if strings.HasPrefix(o, "file:///") { // 是文件路径
+				h.Set("Content-Type", "application/octet-stream")
+				r, err := w.CreatePart(h)
+				if err != nil {
+					return nil, "", err
+				}
 				f, err := os.Open(o[8:])
 				if err != nil {
 					return nil, "", err
@@ -142,6 +157,11 @@ func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) 
 				continue
 			}
 			if strings.HasPrefix(o, "base64://") { // 是 base64
+				h.Set("Content-Type", "application/octet-stream")
+				r, err := w.CreatePart(h)
+				if err != nil {
+					return nil, "", err
+				}
 				_, err = io.Copy(r, base64.NewDecoder(base64.StdEncoding, bytes.NewBufferString(o[9:])))
 				if err != nil {
 					return nil, "", err
@@ -149,11 +169,20 @@ func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) 
 				continue
 			}
 			if strings.HasPrefix(o, "base16384://") { // 是 base16384
+				h.Set("Content-Type", "application/octet-stream")
+				r, err := w.CreatePart(h)
+				if err != nil {
+					return nil, "", err
+				}
 				_, err = io.Copy(r, base14.NewDecoder(bytes.NewBufferString(o[12:])))
 				if err != nil {
 					return nil, "", err
 				}
 				continue
+			}
+			r, err := w.CreatePart(h)
+			if err != nil {
+				return nil, "", err
 			}
 			_, err = io.WriteString(r, o)
 			if err != nil {
@@ -161,12 +190,21 @@ func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) 
 			}
 			continue
 		case []byte:
+			h.Set("Content-Type", "application/octet-stream")
+			r, err := w.CreatePart(h)
+			if err != nil {
+				return nil, "", err
+			}
 			_, err = r.Write(o)
 			if err != nil {
 				return nil, "", err
 			}
 			continue
 		default:
+			r, err := w.CreatePart(h)
+			if err != nil {
+				return nil, "", err
+			}
 			_, err = io.WriteString(r, fmt.Sprint(o))
 			if err != nil {
 				return nil, "", err

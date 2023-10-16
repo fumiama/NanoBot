@@ -154,7 +154,7 @@ func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error)
 			tag = "file_image"
 		}
 		msg = append(msg, tag)
-		if xi.Kind() == reflect.Struct {
+		if xi.Kind() == reflect.Pointer && xi.Elem().Kind() == reflect.Struct {
 			data, err := json.Marshal(xi.Interface())
 			if err != nil {
 				return nil, err
