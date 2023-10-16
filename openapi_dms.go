@@ -1,5 +1,7 @@
 package nano
 
+import "github.com/sirupsen/logrus"
+
 // DMS 私信会话对象
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/dms/model.html
@@ -25,6 +27,7 @@ func (bot *Bot) CreatePrivateChat(guildid, userid string) (*DMS, error) {
 //
 // - 私信的 guild_id 在创建私信会话时以及私信消息事件中获取
 func (bot *Bot) PostMessageToUser(id string, content *MessagePost) (*Message, error) {
+	logrus.Infoln(getLogHeader(), "<= [私]频道:", id+",", content)
 	return bot.postMessageTo("/dms/"+id+"/messages", content)
 }
 

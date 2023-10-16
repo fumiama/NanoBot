@@ -300,7 +300,7 @@ func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error)
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/post_messages.html
 func (bot *Bot) PostMessageToChannel(id string, content *MessagePost) (*Message, error) {
-	logrus.Infoln(getLogHeader(), "<= 频道:", id+",", content)
+	logrus.Infoln(getLogHeader(), "<= [公]频道:", id+",", content)
 	return bot.postMessageTo("/channels/"+id+"/messages", content)
 }
 
