@@ -3,10 +3,12 @@ package nano
 import (
 	"encoding/json"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -35,6 +37,71 @@ type Message struct {
 	Data             *struct {
 		MessageAudit *MessageAudited `json:"message_audit,omitempty"`
 	} `json:"data,omitempty"`
+}
+
+// "=> ｷﾞﾙﾄﾞ:", ctx.Message.GuildID+", 频道:", ctx.Message.ChannelID+", 用户:", ctx.Message.Author.Username+"("+ctx.Message.Author.ID+"), 内容:", ctx.Message.Content
+func (m *Message) String() string {
+	sb := strings.Builder{}
+	sb.WriteByte('[')
+	sb.WriteString(m.SeqInChannel)
+	sb.WriteByte(']')
+	sb.WriteString(" ｷﾞﾙﾄﾞ: ")
+	sb.WriteString(m.GuildID)
+	if m.SrcGuildID != "" {
+		sb.WriteString(", 元ｷﾞﾙﾄﾞ: ")
+		sb.WriteString(m.SrcGuildID)
+	}
+	sb.WriteString(", 频道: ")
+	sb.WriteString(m.ChannelID)
+	if m.Author != nil {
+		sb.WriteString(", 用户: ")
+		sb.WriteString(m.Author.Username)
+		sb.WriteByte('(')
+		sb.WriteString(m.Author.ID)
+		sb.WriteByte(')')
+		if m.Author.Bot {
+			sb.WriteString("(机器人)")
+		}
+	} else {
+		sb.WriteString(", 用户: 未知")
+	}
+	if m.Content == "" {
+		sb.WriteString("无文本")
+	} else {
+		sb.WriteString("文本: ")
+		if m.MentionEveryone {
+			sb.WriteString("[@全体]")
+		}
+		sb.WriteString(m.Content)
+	}
+	if len(m.Attachments) > 0 {
+		sb.WriteString(", 附加: ")
+		for _, a := range m.Attachments {
+			sb.WriteString("<ID:")
+			sb.WriteString(a.ID)
+			sb.WriteString(",URL:")
+			sb.WriteString(a.URL)
+			sb.WriteByte('>')
+		}
+	}
+	if len(m.Embeds) > 0 {
+		for _, e := range m.Embeds {
+			sb.WriteString(", 嵌入: <标题:")
+			sb.WriteString(e.Title)
+			sb.WriteString(",提示:")
+			sb.WriteString(e.Prompt)
+			sb.WriteByte('>')
+		}
+	}
+	if m.Ark != nil {
+		sb.WriteString(", 模版: ")
+		sb.WriteString(strconv.Itoa(m.Ark.TemplateID))
+	}
+	if m.MessageReference != nil {
+		sb.WriteString(", 回复: ")
+		sb.WriteString(m.MessageReference.MessageID)
+	}
+	return sb.String()
 }
 
 // MessageEmbed https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#messageembed
@@ -137,6 +204,60 @@ type MessagePost struct {
 	KeyBoard         *MessageKeyboard  `json:"keyboard,omitempty"`
 }
 
+func (mp *MessagePost) String() string {
+	sb := strings.Builder{}
+	if mp.Content == "" {
+		sb.WriteString("无文本")
+	} else {
+		sb.WriteString("文本: ")
+		sb.WriteString(mp.Content)
+	}
+	if mp.ReplyMessageID != "" {
+		sb.WriteString(", 回应消息: ")
+		sb.WriteString(mp.ReplyMessageID)
+	}
+	if mp.ReplyMessageID != "" {
+		sb.WriteString(", 回应事件: ")
+		sb.WriteString(mp.ReplyEventID)
+	}
+	if mp.Embed != nil {
+		sb.WriteString(", 嵌入: <标题:")
+		sb.WriteString(mp.Embed.Title)
+		sb.WriteString(",提示:")
+		sb.WriteString(mp.Embed.Prompt)
+		sb.WriteByte('>')
+	}
+	if mp.Ark != nil {
+		sb.WriteString(", 模版: ")
+		sb.WriteString(strconv.Itoa(mp.Ark.TemplateID))
+	}
+	if mp.MessageReference != nil {
+		sb.WriteString(", 回复: ")
+		sb.WriteString(mp.MessageReference.MessageID)
+	}
+	if mp.Image != "" {
+		sb.WriteString(", 图片URL:")
+		sb.WriteString(mp.Image)
+	}
+	if mp.ImageFile != "" {
+		sb.WriteString(", 图片内容:")
+		x := mp.ImageFile
+		if len(x) > 64 {
+			x = x[:64] + "..."
+		}
+		sb.WriteString(x)
+	}
+	if mp.Markdown != nil {
+		sb.WriteString(", MD模版: ")
+		sb.WriteString(strconv.Itoa(mp.Markdown.TemplateID))
+	}
+	if mp.KeyBoard != nil {
+		sb.WriteString(", KB模版: ")
+		sb.WriteString(mp.KeyBoard.ID)
+	}
+	return sb.String()
+}
+
 func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error) {
 	if content.ImageFile == "" {
 		return bot.postOpenAPIofMessage(ep, "", WriteBodyFromJSON(content))
@@ -178,6 +299,7 @@ func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error)
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/post_messages.html
 func (bot *Bot) PostMessageToChannel(id string, content *MessagePost) (*Message, error) {
+	logrus.Infoln(getLogHeader(), "<= 频道:", id+",", content)
 	return bot.postMessageTo("/channels/"+id+"/messages", content)
 }
 
@@ -185,6 +307,7 @@ func (bot *Bot) PostMessageToChannel(id string, content *MessagePost) (*Message,
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/delete_message.html
 func (bot *Bot) DeleteMessageInChannel(channelid, messageid string, hidetip bool) error {
+	logrus.Infoln(getLogHeader(), "<x 频道:", channelid+", 消息:", messageid)
 	return bot.DeleteOpenAPI(WriteHTTPQueryIfNotNil("/channels/"+channelid+"/messages/"+messageid,
 		"hidetip", hidetip,
 	), "", nil)
