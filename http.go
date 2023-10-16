@@ -120,7 +120,7 @@ func WriteBodyByMultipartFormData(params ...any) (*bytes.Buffer, string, error) 
 		if err != nil {
 			return nil, "", err
 		}
-		if rx.Elem().Kind() == reflect.Struct { // 使用 json 编码
+		if rx.Kind() == reflect.Pointer && rx.Elem().Kind() == reflect.Struct { // 使用 json 编码
 			err = json.NewEncoder(r).Encode(x)
 			if err != nil {
 				return nil, "", err
