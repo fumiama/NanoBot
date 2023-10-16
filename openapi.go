@@ -41,7 +41,7 @@ func (bot *Bot) dohttprequest(constructer HTTPRequsetConstructer, ep, contenttyp
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := bot.client.Do(req)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}

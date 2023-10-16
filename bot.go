@@ -40,6 +40,7 @@ type Bot struct {
 	mu        sync.Mutex                  // 写锁
 	conn      *websocket.Conn             // conn 目前的 wss 连接
 	hbonce    sync.Once                   // hbonce 保证仅执行一次 heartbeat
+	client    *http.Client                // client 主要配置 timeout
 
 	ready EventReady // ready 连接成功后下发的 bot 基本信息
 }
@@ -117,6 +118,12 @@ func Run(bots ...*Bot) error {
 func (b *Bot) Init(gateway string, shard [2]byte) *Bot {
 	b.gateway = gateway
 	b.shard = shard
+	if b.Timeout == 0 {
+		b.Timeout = time.Minute
+	}
+	b.client = &http.Client{
+		Timeout: b.Timeout,
+	}
 	if b.Handler != nil {
 		h := reflect.ValueOf(b.Handler).Elem()
 		t := h.Type()
