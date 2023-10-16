@@ -1,7 +1,6 @@
 <div align="center">
-  <a href="https://crypko.ai/crypko/GtWYDpVMx5GYm/">
   <img src=".github/nano.jpeg" alt="东云名乃" width = "256">
-  </a><br>
+  <br>
 
   <h1>NanoBot</h1>
   类 ZeroBot 的官方 QQ 频道适配器<br><br>
