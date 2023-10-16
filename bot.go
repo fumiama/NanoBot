@@ -27,7 +27,7 @@ type Bot struct {
 	Secret     string          // Secret is 机器人密钥
 	SuperUsers []string        // SuperUsers 超级用户
 	Timeout    time.Duration   // Timeout is API 调用超时
-	Handler    *Handler        // Handler 注册对各种事件的处理
+	Handler    *Handler        `json:"-"` // Handler 注册对各种事件的处理
 	Intents    uint32          // Intents 欲接收的事件
 	shard      [2]byte         // shard 分片
 	ShardIndex uint16          // ShardIndex 本连接为第几个分片, 默认 1, 0 为不使用分片
@@ -48,6 +48,9 @@ type Bot struct {
 // getinitinfo 获得 gateway 和 shard
 func (b *Bot) getinitinfo() (gw string, shard [2]byte, err error) {
 	shard[1] = 1
+	if b.client != nil {
+		b.client = http.DefaultClient
+	}
 	if b.ShardIndex == 0 {
 		gw, err = b.GetGeneralWSSGateway()
 		if err != nil {
