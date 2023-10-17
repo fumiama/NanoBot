@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 	"unsafe"
 
 	"github.com/pkg/errors"
@@ -28,14 +29,6 @@ type CodeMessageBase struct {
 	M string `json:"message"`
 }
 
-func checkrespbaseunsafe(ptr any) error {
-	respbase := (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
-	if respbase.C != 0 {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(respbase.C)+", msg: "+respbase.M), getCallerFuncName())
-	}
-	return nil
-}
-
 func (bot *Bot) dohttprequest(constructer HTTPRequsetConstructer, ep, contenttype string, ptr any, body io.Reader) error {
 	req, err := constructer(ep, contenttype, bot.Authorization(), body)
 	if err != nil {
@@ -49,20 +42,47 @@ func (bot *Bot) dohttprequest(constructer HTTPRequsetConstructer, ep, contenttyp
 	if resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
+	errsb := strings.Builder{}
+	var respbase *CodeMessageBase
 	if resp.StatusCode >= http.StatusBadRequest {
-		return errors.Wrap(errors.New("code: "+strconv.Itoa(resp.StatusCode)+", msg: "+resp.Status), getCallerFuncName())
+		errsb.WriteString("code: ")
+		errsb.WriteString(resp.Status)
 	}
 	if ptr == nil {
-		return nil
+		goto RET
 	}
 	err = json.NewDecoder(resp.Body).Decode(ptr)
 	if err != nil {
-		return errors.Wrap(err, getCallerFuncName())
+		if errsb.Len() > 0 {
+			errsb.WriteString(", ")
+		}
+		errsb.WriteString("json: ")
+		errsb.WriteString(err.Error())
+		goto RET
 	}
 	if reflect.ValueOf(ptr).Elem().Kind() == reflect.Slice {
 		return nil
 	}
-	return checkrespbaseunsafe(ptr)
+	respbase = (*CodeMessageBase)(*(*unsafe.Pointer)(unsafe.Add(unsafe.Pointer(&ptr), unsafe.Sizeof(uintptr(0)))))
+	if respbase.C != 0 {
+		if errsb.Len() > 0 {
+			errsb.WriteString(", ")
+		}
+		errsb.WriteString("err: [")
+		errsb.WriteString(strconv.Itoa(respbase.C))
+		errsb.WriteString("] ")
+		if len([]rune(respbase.M)) > 256 {
+			errsb.WriteString(string([]rune(respbase.M)[:256]))
+			errsb.WriteString("...")
+		} else {
+			errsb.WriteString(respbase.M)
+		}
+	}
+RET:
+	if errsb.Len() > 0 {
+		return errors.Wrap(errors.New(errsb.String()), getCallerFuncName())
+	}
+	return nil
 }
 
 //go:generate go run codegen/getopenapiof/main.go ShardWSSGateway User Guild Channel Member RoleMembers GuildRoleList ChannelPermissions Message MessageSetting PinsMessage Schedule MessageReactionUsers

@@ -289,18 +289,24 @@ func CheckGuild(guildID ...string) Rule {
 
 // OnlyPrivate requires that the ctx.Event is direct message
 func OnlyPrivate(ctx *Ctx) bool {
-	if ctx.Type == "" { // 确保无空
-		return false
+	if ctx.Message != nil {
+		return ctx.Message.SrcGuildID != ""
 	}
-	return strings.HasPrefix(ctx.Type, "Direct")
+	if ctx.Type != "" {
+		return strings.HasPrefix(ctx.Type, "Direct")
+	}
+	return false
 }
 
 // OnlyPublic requires that the ctx.Event is channel message
 func OnlyPublic(ctx *Ctx) bool {
-	if ctx.Type == "" { // 确保无空
-		return false
+	if ctx.Message != nil {
+		return ctx.Message.SrcGuildID == ""
 	}
-	return !strings.HasPrefix(ctx.Type, "Direct")
+	if ctx.Type != "" {
+		return !strings.HasPrefix(ctx.Type, "Direct")
+	}
+	return false
 }
 
 // OnlyChannel requires that the ctx.Event is channel message
