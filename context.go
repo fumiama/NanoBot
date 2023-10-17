@@ -75,13 +75,18 @@ func (ctx *Ctx) CheckSession() Rule {
 
 // Send 发送消息到对方
 func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (*Message, error) {
-	msg := ctx.Value.(*Message)
-	post.ReplyMessageID = msg.ID
-	if replytosender {
-		post.MessageReference = &MessageReference{
-			MessageID: msg.ID,
+	msg, ok := ctx.Value.(*Message)
+	if ok && msg != nil {
+		post.ReplyMessageID = msg.ID
+		if replytosender {
+			post.MessageReference = &MessageReference{
+				MessageID: msg.ID,
+			}
 		}
+	} else {
+		post.ReplyMessageID = "MESSAGE_CREATE"
 	}
+
 	if msg.SrcGuildID != "" { // dms
 		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
 	}
@@ -90,16 +95,20 @@ func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (*Message, error) {
 
 // SendPlainMessage 发送纯文本消息到对方
 func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message, error) {
-	msg := ctx.Value.(*Message)
-	post := &MessagePost{
-		ReplyMessageID: msg.ID,
-	}
-	if replytosender {
-		post.MessageReference = &MessageReference{
-			MessageID: msg.ID,
+	msg, ok := ctx.Value.(*Message)
+	post := &MessagePost{}
+	if ok && msg != nil {
+		post.ReplyMessageID = msg.ID
+		if replytosender {
+			post.MessageReference = &MessageReference{
+				MessageID: msg.ID,
+			}
 		}
+	} else {
+		post.ReplyMessageID = "MESSAGE_CREATE"
 	}
-	post.Content = fmt.Sprint(printable...)
+
+	post.Content = HideURL(fmt.Sprint(printable...))
 	if msg.SrcGuildID != "" { // dms
 		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
 	}
@@ -108,21 +117,26 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 
 // SendImage 发送带图片消息到对方
 func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Message, error) {
-	msg := ctx.Value.(*Message)
-	post := &MessagePost{
-		ReplyMessageID: msg.ID,
+	msg, ok := ctx.Value.(*Message)
+	post := &MessagePost{}
+	if ok && msg != nil {
+		post.ReplyMessageID = msg.ID
+		if replytosender {
+			post.MessageReference = &MessageReference{
+				MessageID: msg.ID,
+			}
+		}
+	} else {
+		post.ReplyMessageID = "MESSAGE_CREATE"
 	}
+
 	if strings.HasPrefix(file, "http") {
 		post.Image = file
 	} else {
 		post.ImageFile = file
 	}
-	if replytosender {
-		post.MessageReference = &MessageReference{
-			MessageID: msg.ID,
-		}
-	}
-	post.Content = fmt.Sprint(caption...)
+	post.Content = HideURL(fmt.Sprint(caption...))
+
 	if msg.SrcGuildID != "" { // dms
 		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
 	}

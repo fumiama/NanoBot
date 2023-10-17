@@ -63,6 +63,14 @@ func MessageUnescape(text string) string {
 	return text
 }
 
+// HideURL 转义 URL 以避免审核
+func HideURL(s string) string {
+	s = strings.ReplaceAll(s, ".", "…")
+	s = strings.ReplaceAll(s, "http://", "🔗📄:")
+	s = strings.ReplaceAll(s, "https://", "🔗🔒:")
+	return s
+}
+
 // UnderlineToCamel convert abc_def to AbcDef
 func UnderlineToCamel(s string) string {
 	sb := strings.Builder{}

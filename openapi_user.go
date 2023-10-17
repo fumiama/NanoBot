@@ -12,6 +12,11 @@ type User struct {
 	UnionUserAccount string `json:"union_user_account"`
 }
 
+// At 返回 <@!u.ID>
+func (u *User) At() string {
+	return "<@!" + u.ID + ">"
+}
+
 // GetMyInfo 获取当前用户（机器人）详情
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/user/me.html

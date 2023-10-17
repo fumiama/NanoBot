@@ -153,7 +153,7 @@ func (bot *Bot) Authorization() string {
 	return "Bot " + bot.AppID + "." + bot.Token
 }
 
-// AtMe 返回 "<@!"+bot.ready.User.ID+">"
+// AtMe 返回 <@!bot.ready.User.ID>
 func (bot *Bot) AtMe() string {
 	return "<@!" + bot.ready.User.ID + ">"
 }
