@@ -3,20 +3,20 @@ module github.com/fumiama/NanoBot
 go 1.20
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20230827160415-f0865337a824
-	github.com/FloatTech/zbpctrl v1.5.3-0.20230514154630-b74e6fcca380
+	github.com/FloatTech/floatbox v0.0.0-20231017134949-ae5059ebace7
+	github.com/FloatTech/zbpctrl v1.6.0
 	github.com/RomiChan/syncx v0.0.0-20221202055724-5f842c53020e
 	github.com/RomiChan/websocket v1.4.3-0.20220227141055-9b2c6168c9c5
 	github.com/fumiama/go-base16384 v1.7.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.1
-	github.com/wdvxdr1123/ZeroBot v1.7.4
+	github.com/wdvxdr1123/ZeroBot v1.7.5-0.20231009162356-57f71b9f5258
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	github.com/FloatTech/sqlite v1.6.2 // indirect
+	github.com/FloatTech/sqlite v1.6.3 // indirect
 	github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fumiama/cron v1.3.0 // indirect
