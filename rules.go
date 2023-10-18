@@ -298,6 +298,11 @@ func OnlyDirect(ctx *Ctx) bool {
 	return false
 }
 
+// OnlyChannel requires that the ctx.Event is channel message
+func OnlyChannel(ctx *Ctx) bool {
+	return !OnlyPrivate(ctx)
+}
+
 // OnlyPublic requires that the ctx.Event is public message
 func OnlyPublic(ctx *Ctx) bool {
 	if ctx.Message != nil && ctx.Message.SrcGuildID != "" {
