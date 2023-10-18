@@ -25,17 +25,17 @@ var (
 
 // Bot 一个机器人实例的配置
 type Bot struct {
-	AppID      string          // AppID is BotAppID（开发者ID）
-	Token      string          // Token is 机器人令牌
-	Secret     string          // Secret is 机器人密钥
-	SuperUsers []string        // SuperUsers 超级用户
-	Timeout    time.Duration   // Timeout is API 调用超时
-	Handler    *Handler        `json:"-"` // Handler 注册对各种事件的处理
-	Intents    uint32          // Intents 欲接收的事件
-	ShardIndex uint8           // ShardIndex 本连接为第几个分片, 默认 1, 0 为不使用分片
-	ShardCount uint8           // ShardCount 分片总数
+	AppID      string          `yaml:"AppID"`      // AppID is BotAppID（开发者ID）
+	Token      string          `yaml:"Token"`      // Token is 机器人令牌
+	Secret     string          `yaml:"Secret"`     // Secret is 机器人密钥
+	SuperUsers []string        `yaml:"SuperUsers"` // SuperUsers 超级用户
+	Timeout    time.Duration   `yaml:"Timeout"`    // Timeout is API 调用超时
+	Handler    *Handler        `yaml:"-"`          // Handler 注册对各种事件的处理
+	Intents    uint32          `yaml:"Intents"`    // Intents 欲接收的事件
+	ShardIndex uint8           `yaml:"ShardIndex"` // ShardIndex 本连接为第几个分片, 默认 1, 0 为不使用分片
+	ShardCount uint8           `yaml:"ShardCount"` // ShardCount 分片总数
 	shard      [2]byte         // shard 分片
-	Properties json.RawMessage // Properties 一些环境变量, 目前没用
+	Properties json.RawMessage `yaml:"Properties"` // Properties 一些环境变量, 目前没用
 
 	gateway   string                      // gateway 获得的网关
 	seq       uint32                      // seq 最新的 s
