@@ -55,7 +55,7 @@ func (m MessageSegment) String() string {
 func Text(text ...interface{}) MessageSegment {
 	return MessageSegment{
 		Type: MessageTypeText,
-		Data: MessageEscape(fmt.Sprint(text...)),
+		Data: HideURL(MessageEscape(fmt.Sprint(text...))),
 	}
 }
 
