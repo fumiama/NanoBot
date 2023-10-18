@@ -2,7 +2,7 @@
 
 package nano
 
-// 生成自文件 openapi_announces.go
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_announces.go vvvvvvvvvvvvvvvvvvvvv */
 
 // PostAnnounceInGuild 创建频道全局公告，公告类型分为 消息类型的频道公告 和 推荐子频道类型的频道公告
 //
@@ -21,7 +21,10 @@ func (ctx *Ctx) PostAnnounceInGuild(id string, content *Announces) error {
 func (ctx *Ctx) DeleteAnnounceInGuild(guildid, messageid string) error {
 	return ctx.caller.DeleteAnnounceInGuild(guildid, messageid)
 }
-// 生成自文件 openapi_audio.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_announces.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_audio.go vvvvvvvvvvvvvvvvvvvvv */
 
 // ControlAudioInChannel 控制子频道 channel_id 下的音频
 //
@@ -43,7 +46,10 @@ func (ctx *Ctx) OpenMicInChannel(id string) error {
 func (ctx *Ctx) CloseMicInChannel(id string) error {
 	return ctx.caller.CloseMicInChannel(id)
 }
-// 生成自文件 openapi_channel.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_audio.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_channel.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetChannelsOfGuild 获取 guild_id 指定的频道下的子频道列表
 //
@@ -114,11 +120,26 @@ func (ctx *Ctx) GetChannelPermissionsOfRole(channelid, roleid string) (*ChannelP
 func (ctx *Ctx) SetChannelPermissionsOfRole(channelid, roleid string, add, remove string) error {
 	return ctx.caller.SetChannelPermissionsOfRole(channelid, roleid, add, remove)
 }
-// 生成自文件 openapi_codegen_getopenapiof.go
-// 生成自文件 openapi_codegen_patchopenapiof.go
-// 生成自文件 openapi_codegen_postopenapiof.go
-// 生成自文件 openapi_codegen_putopenapiof.go
-// 生成自文件 openapi_dms.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_channel.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_codegen_getopenapiof.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_codegen_getopenapiof.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_codegen_patchopenapiof.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_codegen_patchopenapiof.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_codegen_postopenapiof.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_codegen_postopenapiof.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_codegen_putopenapiof.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_codegen_putopenapiof.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_dms.go vvvvvvvvvvvvvvvvvvvvv */
 
 // CreatePrivateChat 机器人和在同一个频道内的成员创建私信会话
 //
@@ -142,7 +163,10 @@ func (ctx *Ctx) PostMessageToUser(id string, content *MessagePost) (*Message, er
 func (ctx *Ctx) DeleteMessageOfUser(guildid, messageid string, hidetip bool) error {
 	return ctx.caller.DeleteMessageOfUser(guildid, messageid, hidetip)
 }
-// 生成自文件 openapi_emoji.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_dms.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_emoji.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GiveMessageReaction 对消息 message_id 进行表情表态
 //
@@ -164,7 +188,10 @@ func (ctx *Ctx) DeleteMessageReaction(channelid, messageid string, emoji Emoji) 
 func (ctx *Ctx) GetMessageReactionUsers(channelid, messageid string, emoji Emoji, cookie string, limit int) (*MessageReactionUsers, error) {
 	return ctx.caller.GetMessageReactionUsers(channelid, messageid, emoji, cookie, limit)
 }
-// 生成自文件 openapi_forum.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_emoji.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_forum.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetChannelThreads 获取子频道下的帖子列表
 //
@@ -193,7 +220,10 @@ func (ctx *Ctx) PostThreadInChannel(id string, title string, content string, for
 func (ctx *Ctx) DeleteThreadInChannel(channelid, threadid string) error {
 	return ctx.caller.DeleteThreadInChannel(channelid, threadid)
 }
-// 生成自文件 openapi_guild.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_forum.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_guild.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetGuildByID 获取 guild_id 指定的频道的详情
 //
@@ -222,8 +252,14 @@ func (ctx *Ctx) SetUserMuteInGuild(guildid, userid string, endtimestamp string, 
 func (ctx *Ctx) SetUsersMuteInGuild(guildid string, endtimestamp string, seconds string, userids ...string) ([]string, error) {
 	return ctx.caller.SetUsersMuteInGuild(guildid, endtimestamp, seconds, userids...)
 }
-// 生成自文件 openapi_markdown.go
-// 生成自文件 openapi_member.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_guild.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_markdown.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_markdown.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_member.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetGuildMembersIn 获取 guild_id 指定的频道中所有成员的详情列表，支持分页
 //
@@ -254,7 +290,10 @@ func (ctx *Ctx) GetGuildMemberOf(guildid, userid string) (*Member, error) {
 func (ctx *Ctx) DeleteGuildMemberOf(guildid, userid string, addblklst bool, delhistmsgdays int) error {
 	return ctx.caller.DeleteGuildMemberOf(guildid, userid, addblklst, delhistmsgdays)
 }
-// 生成自文件 openapi_message.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_member.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_message.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetMessageFromChannel 获取子频道 channel_id 下的消息 message_id 的详情
 //
@@ -283,8 +322,14 @@ func (ctx *Ctx) DeleteMessageInChannel(channelid, messageid string, hidetip bool
 func (ctx *Ctx) GetGuildMessageSetting(id string) (*MessageSetting, error) {
 	return ctx.caller.GetGuildMessageSetting(id)
 }
-// 生成自文件 openapi_permissions.go
-// 生成自文件 openapi_pins.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_message.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_permissions.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_permissions.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_pins.go vvvvvvvvvvvvvvvvvvvvv */
 
 // PinMessageInChannel 添加子频道 channel_id 内的精华消息
 //
@@ -308,8 +353,14 @@ func (ctx *Ctx) UnpinMessageInChannel(channelid, messageid string) error {
 func (ctx *Ctx) GetPinMessagesOfChannel(id string) (*PinsMessage, error) {
 	return ctx.caller.GetPinMessagesOfChannel(id)
 }
-// 生成自文件 openapi_richobj.go
-// 生成自文件 openapi_role.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_pins.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_richobj.go vvvvvvvvvvvvvvvvvvvvv */
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_richobj.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_role.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetGuildRoleListIn 获取 guild_id 指定的频道下的身份组列表
 //
@@ -356,7 +407,10 @@ func (ctx *Ctx) AddRoleToMemberOfGuild(guildid, userid, roleid, channelid string
 func (ctx *Ctx) RemoveRoleFromMemberOfGuild(guildid, userid, roleid, channelid string) error {
 	return ctx.caller.RemoveRoleFromMemberOfGuild(guildid, userid, roleid, channelid)
 }
-// 生成自文件 openapi_schedule.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_role.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_schedule.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetChannelSchedules 获取channel_id指定的子频道中当天的日程列表
 //
@@ -396,7 +450,10 @@ func (ctx *Ctx) PatchScheduleInChannel(channelid string, scheduleid string, sche
 func (ctx *Ctx) DeleteScheduleInChannel(channelid string, scheduleid string) error {
 	return ctx.caller.DeleteScheduleInChannel(channelid, scheduleid)
 }
-// 生成自文件 openapi_user.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_schedule.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_user.go vvvvvvvvvvvvvvvvvvvvv */
 
 // AtMe 返回 <@!bot.ready.User.ID>
 func (ctx *Ctx) AtMe() string {
@@ -416,7 +473,10 @@ func (ctx *Ctx) GetMyInfo() (*User, error) {
 func (ctx *Ctx) GetMyGuilds(before, after string, limit int) (guilds []Guild, err error) {
 	return ctx.caller.GetMyGuilds(before, after, limit)
 }
-// 生成自文件 openapi_wss.go
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_user.go ^^^^^^^^^^^^^^^^^^^^ */
+
+/* vvvvvvvvvvvvvvvvvvvv 生成自文件 openapi_wss.go vvvvvvvvvvvvvvvvvvvvv */
 
 // GetGeneralWSSGateway 获取通用 WSS 接入点
 //
@@ -431,3 +491,5 @@ func (ctx *Ctx) GetGeneralWSSGateway() (string, error) {
 func (ctx *Ctx) GetShardWSSGateway() (*ShardWSSGateway, error) {
 	return ctx.caller.GetShardWSSGateway()
 }
+
+/* ^^^^^^^^^^^^^^^^^^^^ 生成自文件 openapi_wss.go ^^^^^^^^^^^^^^^^^^^^ */

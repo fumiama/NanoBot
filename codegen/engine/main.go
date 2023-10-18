@@ -59,8 +59,8 @@ func (e *Engine) On[Message]Shell(command string, model interface{}, rules ...Ru
 type config struct {
 	EmptyOn []string `yaml:"emptyon"`
 	RuleOn  struct {
-		Message []string             `yaml:"Message"`
-		Rule    map[string][2]string `yaml:"Rule"`
+		Message []string    `yaml:"Message"`
+		Rule    [][3]string `yaml:"Rule"`
 	} `yaml:"ruleon"`
 }
 
@@ -91,12 +91,12 @@ func main() {
 		}
 	}
 	for _, msg := range cfg.RuleOn.Message {
-		for rule, x := range cfg.RuleOn.Rule {
+		for _, x := range cfg.RuleOn.Rule {
 			s := strings.ReplaceAll(ruleon, "[Message]", msg)
-			s = strings.ReplaceAll(s, "[Rule]", rule)
-			s = strings.ReplaceAll(s, "[Name]", x[0])
-			s = strings.ReplaceAll(s, "[Type]", x[1])
-			if strings.Contains(rule, "Group") {
+			s = strings.ReplaceAll(s, "[Rule]", x[0])
+			s = strings.ReplaceAll(s, "[Name]", x[1])
+			s = strings.ReplaceAll(s, "[Type]", x[2])
+			if strings.Contains(x[0], "Group") {
 				s = strings.ReplaceAll(s, "[...]", "...")
 			} else {
 				s = strings.ReplaceAll(s, "[...]", "")

@@ -7,6 +7,8 @@ import (
 	"sync"
 )
 
+//go:generate go run codegen/context/main.go
+
 type Ctx struct {
 	Event
 	State

@@ -248,54 +248,6 @@ func (e *Engine) OnPublicMessageDelete(rules ...Rule) *Matcher { return e.On("Pu
 // OnPublicMessageDelete ...
 func OnPublicMessageDelete(rules ...Rule) *Matcher { return On("PublicMessageDelete", rules...) }
 
-// OnMessageKeyword ...
-func OnMessageKeyword(keyword string, rules ...Rule) *Matcher {
-	return defaultEngine.OnMessageKeyword(keyword, rules...)
-}
-
-// OnMessageKeyword ...
-func (e *Engine) OnMessageKeyword(keyword string, rules ...Rule) *Matcher {
-	matcher := &Matcher{
-		Type:   "Message",
-		Rules:  append([]Rule{KeywordRule(keyword)}, rules...),
-		Engine: e,
-	}
-	e.matchers = append(e.matchers, matcher)
-	return StoreMatcher(matcher)
-}
-
-// OnMessageCommandGroup ...
-func OnMessageCommandGroup(commands []string, rules ...Rule) *Matcher {
-	return defaultEngine.OnMessageCommandGroup(commands, rules...)
-}
-
-// OnMessageCommandGroup ...
-func (e *Engine) OnMessageCommandGroup(commands []string, rules ...Rule) *Matcher {
-	matcher := &Matcher{
-		Type:   "Message",
-		Rules:  append([]Rule{CommandGroupRule(commands...)}, rules...),
-		Engine: e,
-	}
-	e.matchers = append(e.matchers, matcher)
-	return StoreMatcher(matcher)
-}
-
-// OnMessageSuffixGroup ...
-func OnMessageSuffixGroup(suffix []string, rules ...Rule) *Matcher {
-	return defaultEngine.OnMessageSuffixGroup(suffix, rules...)
-}
-
-// OnMessageSuffixGroup ...
-func (e *Engine) OnMessageSuffixGroup(suffix []string, rules ...Rule) *Matcher {
-	matcher := &Matcher{
-		Type:   "Message",
-		Rules:  append([]Rule{SuffixGroupRule(suffix...)}, rules...),
-		Engine: e,
-	}
-	e.matchers = append(e.matchers, matcher)
-	return StoreMatcher(matcher)
-}
-
 // OnMessagePrefix ...
 func OnMessagePrefix(prefix string, rules ...Rule) *Matcher {
 	return defaultEngine.OnMessagePrefix(prefix, rules...)
@@ -312,6 +264,38 @@ func (e *Engine) OnMessagePrefix(prefix string, rules ...Rule) *Matcher {
 	return StoreMatcher(matcher)
 }
 
+// OnMessageSuffix ...
+func OnMessageSuffix(suffix string, rules ...Rule) *Matcher {
+	return defaultEngine.OnMessageSuffix(suffix, rules...)
+}
+
+// OnMessageSuffix ...
+func (e *Engine) OnMessageSuffix(suffix string, rules ...Rule) *Matcher {
+	matcher := &Matcher{
+		Type:   "Message",
+		Rules:  append([]Rule{SuffixRule(suffix)}, rules...),
+		Engine: e,
+	}
+	e.matchers = append(e.matchers, matcher)
+	return StoreMatcher(matcher)
+}
+
+// OnMessageCommand ...
+func OnMessageCommand(commands string, rules ...Rule) *Matcher {
+	return defaultEngine.OnMessageCommand(commands, rules...)
+}
+
+// OnMessageCommand ...
+func (e *Engine) OnMessageCommand(commands string, rules ...Rule) *Matcher {
+	matcher := &Matcher{
+		Type:   "Message",
+		Rules:  append([]Rule{CommandRule(commands)}, rules...),
+		Engine: e,
+	}
+	e.matchers = append(e.matchers, matcher)
+	return StoreMatcher(matcher)
+}
+
 // OnMessageRegex ...
 func OnMessageRegex(regexPattern string, rules ...Rule) *Matcher {
 	return defaultEngine.OnMessageRegex(regexPattern, rules...)
@@ -322,6 +306,22 @@ func (e *Engine) OnMessageRegex(regexPattern string, rules ...Rule) *Matcher {
 	matcher := &Matcher{
 		Type:   "Message",
 		Rules:  append([]Rule{RegexRule(regexPattern)}, rules...),
+		Engine: e,
+	}
+	e.matchers = append(e.matchers, matcher)
+	return StoreMatcher(matcher)
+}
+
+// OnMessageKeyword ...
+func OnMessageKeyword(keyword string, rules ...Rule) *Matcher {
+	return defaultEngine.OnMessageKeyword(keyword, rules...)
+}
+
+// OnMessageKeyword ...
+func (e *Engine) OnMessageKeyword(keyword string, rules ...Rule) *Matcher {
+	matcher := &Matcher{
+		Type:   "Message",
+		Rules:  append([]Rule{KeywordRule(keyword)}, rules...),
 		Engine: e,
 	}
 	e.matchers = append(e.matchers, matcher)
@@ -376,6 +376,22 @@ func (e *Engine) OnMessageKeywordGroup(keywords []string, rules ...Rule) *Matche
 	return StoreMatcher(matcher)
 }
 
+// OnMessageCommandGroup ...
+func OnMessageCommandGroup(commands []string, rules ...Rule) *Matcher {
+	return defaultEngine.OnMessageCommandGroup(commands, rules...)
+}
+
+// OnMessageCommandGroup ...
+func (e *Engine) OnMessageCommandGroup(commands []string, rules ...Rule) *Matcher {
+	matcher := &Matcher{
+		Type:   "Message",
+		Rules:  append([]Rule{CommandGroupRule(commands...)}, rules...),
+		Engine: e,
+	}
+	e.matchers = append(e.matchers, matcher)
+	return StoreMatcher(matcher)
+}
+
 // OnMessagePrefixGroup ...
 func OnMessagePrefixGroup(prefix []string, rules ...Rule) *Matcher {
 	return defaultEngine.OnMessagePrefixGroup(prefix, rules...)
@@ -392,32 +408,16 @@ func (e *Engine) OnMessagePrefixGroup(prefix []string, rules ...Rule) *Matcher {
 	return StoreMatcher(matcher)
 }
 
-// OnMessageSuffix ...
-func OnMessageSuffix(suffix string, rules ...Rule) *Matcher {
-	return defaultEngine.OnMessageSuffix(suffix, rules...)
+// OnMessageSuffixGroup ...
+func OnMessageSuffixGroup(suffix []string, rules ...Rule) *Matcher {
+	return defaultEngine.OnMessageSuffixGroup(suffix, rules...)
 }
 
-// OnMessageSuffix ...
-func (e *Engine) OnMessageSuffix(suffix string, rules ...Rule) *Matcher {
+// OnMessageSuffixGroup ...
+func (e *Engine) OnMessageSuffixGroup(suffix []string, rules ...Rule) *Matcher {
 	matcher := &Matcher{
 		Type:   "Message",
-		Rules:  append([]Rule{SuffixRule(suffix)}, rules...),
-		Engine: e,
-	}
-	e.matchers = append(e.matchers, matcher)
-	return StoreMatcher(matcher)
-}
-
-// OnMessageCommand ...
-func OnMessageCommand(commands string, rules ...Rule) *Matcher {
-	return defaultEngine.OnMessageCommand(commands, rules...)
-}
-
-// OnMessageCommand ...
-func (e *Engine) OnMessageCommand(commands string, rules ...Rule) *Matcher {
-	matcher := &Matcher{
-		Type:   "Message",
-		Rules:  append([]Rule{CommandRule(commands)}, rules...),
+		Rules:  append([]Rule{SuffixGroupRule(suffix...)}, rules...),
 		Engine: e,
 	}
 	e.matchers = append(e.matchers, matcher)
