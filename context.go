@@ -123,6 +123,40 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Mes
 	return ctx.Send(replytosender, post)
 }
 
+// Echo 向自身分发虚拟事件
+func (ctx *Ctx) Echo(payload *WebsocketPayload) {
+	ctx.caller.processEvent(payload)
+}
+
+// FutureEvent ...
+func (ctx *Ctx) FutureEvent(Type string, rule ...Rule) *FutureEvent {
+	return ctx.ma.FutureEvent(Type, rule...)
+}
+
+// Get 从 promt 获得回复
+func (ctx *Ctx) Get(prompt string) string {
+	if prompt != "" {
+		_, _ = ctx.SendPlainMessage(false, prompt)
+	}
+	return (<-ctx.FutureEvent("Message", ctx.CheckSession()).Next()).Event.Value.(*Message).Content
+}
+
+// ExtractPlainText 提取消息中的纯文本
+func (ctx *Ctx) ExtractPlainText() string {
+	if ctx == nil || ctx.Value == nil {
+		return ""
+	}
+	if msg, ok := ctx.Value.(*Message); ok {
+		return msg.Content
+	}
+	return ""
+}
+
+// MessageString 字符串消息便于Regex
+func (ctx *Ctx) MessageString() string {
+	return ctx.ExtractPlainText()
+}
+
 // Block 匹配成功后阻止后续触发
 func (ctx *Ctx) Block() {
 	ctx.ma.SetBlock(true)

@@ -394,3 +394,37 @@ func (bot *Bot) Listen() {
 		}
 	}
 }
+
+// GetBot 获取指定的bot (Ctx)实例
+func GetBot(id string) *Ctx {
+	caller, ok := clients.Load(id)
+	if !ok {
+		return nil
+	}
+	return &Ctx{caller: caller}
+}
+
+// RangeBot 遍历所有bot (Ctx)实例
+//
+// 单次操作返回 true 则继续遍历，否则退出
+func RangeBot(iter func(id string, ctx *Ctx) bool) {
+	clients.Range(func(key string, value *Bot) bool {
+		return iter(key, &Ctx{caller: value})
+	})
+}
+
+// GetFirstSuperUser 在 ids 中获得 SuperUsers 列表的首个 qq
+//
+// 找不到返回 nil
+func (bot *Bot) GetFirstSuperUser(ids ...string) string {
+	m := make(map[string]struct{}, len(ids)*4)
+	for _, qq := range ids {
+		m[qq] = struct{}{}
+	}
+	for _, qq := range bot.SuperUsers {
+		if _, ok := m[qq]; ok {
+			return qq
+		}
+	}
+	return ""
+}
