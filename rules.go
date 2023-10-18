@@ -287,8 +287,8 @@ func CheckGuild(guildID ...string) Rule {
 	}
 }
 
-// OnlyPrivate requires that the ctx.Event is direct message
-func OnlyPrivate(ctx *Ctx) bool {
+// OnlyDirect requires that the ctx.Event is direct message
+func OnlyDirect(ctx *Ctx) bool {
 	if ctx.Message != nil {
 		return ctx.Message.SrcGuildID != ""
 	}
@@ -298,20 +298,20 @@ func OnlyPrivate(ctx *Ctx) bool {
 	return false
 }
 
-// OnlyPublic requires that the ctx.Event is channel message
+// OnlyPublic requires that the ctx.Event is public message
 func OnlyPublic(ctx *Ctx) bool {
-	if ctx.Message != nil {
-		return ctx.Message.SrcGuildID == ""
+	if ctx.Message != nil && ctx.Message.SrcGuildID != "" {
+		return false
 	}
 	if ctx.Type != "" {
-		return !strings.HasPrefix(ctx.Type, "Direct")
+		return strings.HasPrefix(ctx.Type, "At") || strings.HasPrefix(ctx.Type, "Public")
 	}
 	return false
 }
 
-// OnlyChannel requires that the ctx.Event is channel message
-func OnlyChannel(ctx *Ctx) bool {
-	return OnlyPublic(ctx)
+// OnlyPrivate requires that the ctx.Event is not public message
+func OnlyPrivate(ctx *Ctx) bool {
+	return !OnlyPublic(ctx)
 }
 
 // SuperUserPermission only triggered by the bot's owner
