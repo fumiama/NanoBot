@@ -357,7 +357,11 @@ func (bot *Bot) Listen() {
 			clients.Store(k, bot)
 			continue
 		}
-		log.Debugln(getLogHeader(), "接收到第", payload.S, "个事件:", payload.Op, ", 类型:", payload.T, ", 数据:", BytesToString(payload.D))
+		log.Debug(getLogHeader(), " 接收到第 ", payload.S, " 个事件: ", payload.Op, ", 类型: ", payload.T, ", 数据: ", BytesToString(payload.D))
+		if payload.S <= bot.seq {
+			log.Warn(getLogHeader(), " 忽略重复编号: ", payload.S, ", 事件: ", payload.Op, ", 类型: ", payload.T)
+			continue
+		}
 		bot.seq = payload.S
 		switch payload.Op {
 		case OpCodeDispatch: // Receive
@@ -390,7 +394,7 @@ func (bot *Bot) Listen() {
 			lastheartbeat = time.Now()
 		case OpCodeHTTPCallbackACK: // Reply
 		default:
-			log.Warnln(getLogHeader(), "忽略未知事件, 序号:", payload.S, ", Op:", payload.Op, ", 类型:", payload.T, ", 数据:", BytesToString(payload.D))
+			log.Warn(getLogHeader(), " 忽略未知事件, 序号: ", payload.S, ", Op: ", payload.Op, ", 类型: ", payload.T, ", 数据: ", BytesToString(payload.D))
 		}
 	}
 }

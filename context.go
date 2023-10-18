@@ -76,8 +76,53 @@ func (ctx *Ctx) CheckSession() Rule {
 	}
 }
 
-// Send 发送消息到对方
-func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (reply *Message, err error) {
+// Send 发送一批消息
+func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
+	isnextreply := false
+	textlist := []any{}
+	var reply *Message
+	for _, msg := range messages {
+		switch msg.Type {
+		case MessageTypeText:
+			textlist = append(textlist, msg.Data)
+		case MessageTypeImage:
+			reply, err = ctx.SendImage(msg.Data, isnextreply, textlist...)
+			if isnextreply {
+				isnextreply = false
+			}
+			textlist = textlist[:0]
+			m = append(m, reply)
+			if err != nil {
+				return
+			}
+		case MessageTypeImageBytes:
+			reply, err = ctx.SendImageBytes(StringToBytes(msg.Data), isnextreply, textlist...)
+			if isnextreply {
+				isnextreply = false
+			}
+			textlist = textlist[:0]
+			m = append(m, reply)
+			if err != nil {
+				return
+			}
+		case MessageTypeReply:
+			isnextreply = true
+		}
+	}
+	if len(textlist) > 0 {
+		reply, err = ctx.SendPlainMessage(isnextreply, textlist...)
+		m = append(m, reply)
+	}
+	return
+}
+
+// SendChain 链式发送
+func (ctx *Ctx) SendChain(message ...MessageSegment) (m []*Message, err error) {
+	return ctx.Send(message)
+}
+
+// Post 发送消息到对方
+func (ctx *Ctx) Post(replytosender bool, post *MessagePost) (reply *Message, err error) {
 	msg := ctx.Message
 	if msg != nil {
 		post.ReplyMessageID = msg.ID
@@ -103,7 +148,7 @@ func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (reply *Message, err
 
 // SendPlainMessage 发送纯文本消息到对方
 func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message, error) {
-	return ctx.Send(replytosender, &MessagePost{
+	return ctx.Post(replytosender, &MessagePost{
 		Content: HideURL(fmt.Sprint(printable...)),
 	})
 }
@@ -120,7 +165,18 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Mes
 		post.ImageFile = file
 	}
 
-	return ctx.Send(replytosender, post)
+	return ctx.Post(replytosender, post)
+}
+
+// SendImageBytes 发送带图片消息到对方
+func (ctx *Ctx) SendImageBytes(data []byte, replytosender bool, caption ...any) (*Message, error) {
+	post := &MessagePost{
+		Content: HideURL(fmt.Sprint(caption...)),
+	}
+
+	post.ImageBytes = data
+
+	return ctx.Post(replytosender, post)
 }
 
 // Echo 向自身分发虚拟事件

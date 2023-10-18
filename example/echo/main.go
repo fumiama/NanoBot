@@ -15,6 +15,6 @@ func init() {
 			if args == "" {
 				return
 			}
-			_, _ = ctx.SendPlainMessage(false, args)
+			_, _ = ctx.SendChain(nano.ReplyTo(ctx.Message.Author.ID), nano.Text(args))
 		})
 }

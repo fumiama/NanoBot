@@ -198,7 +198,8 @@ type MessagePost struct {
 	Ark              *MessageArk       `json:"ark,omitempty"`   // https://bot.q.qq.com/wiki/develop/api/openapi/message/message_template.html
 	MessageReference *MessageReference `json:"message_reference,omitempty"`
 	Image            string            `json:"image,omitempty"`
-	ImageFile        string            `json:"-"` // ImageFile 为图片路径 file:/// or base64:// or base16384:// , 与 Image 参数二选一, 优先 Image
+	ImageFile        string            `json:"-"` // ImageFile 为图片路径 file:/// or base64:// or base16384:// , 与 Image, ImageBytes 参数二选一, 优先 ImageBytes
+	ImageBytes       []byte            `json:"-"` // ImageBytes 图片数据
 	ReplyMessageID   string            `json:"msg_id,omitempty"`
 	ReplyEventID     string            `json:"event_id,omitempty"`
 	Markdown         *MessageMarkdown  `json:"markdown,omitempty"`
@@ -237,16 +238,20 @@ func (mp *MessagePost) String() string {
 		sb.WriteString(mp.MessageReference.MessageID)
 	}
 	if mp.Image != "" {
-		sb.WriteString(", 图片URL:")
+		sb.WriteString(", 图片URL: ")
 		sb.WriteString(mp.Image)
 	}
 	if mp.ImageFile != "" {
-		sb.WriteString(", 图片内容:")
+		sb.WriteString(", 图片内容: ")
 		x := mp.ImageFile
 		if len(x) > 64 {
 			x = x[:64] + "..."
 		}
 		sb.WriteString(x)
+	}
+	if len(mp.ImageBytes) > 0 {
+		sb.WriteString(", 图片大小: ")
+		sb.WriteString(strconv.Itoa(len(mp.ImageBytes)))
 	}
 	if mp.Markdown != nil {
 		sb.WriteString(", MD模版: ")
@@ -260,7 +265,7 @@ func (mp *MessagePost) String() string {
 }
 
 func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error) {
-	if content.ImageFile == "" {
+	if len(content.ImageBytes) == 0 && content.ImageFile == "" {
 		return bot.postOpenAPIofMessage(ep, "", WriteBodyFromJSON(content))
 	}
 	x := reflect.ValueOf(content).Elem()
@@ -284,7 +289,7 @@ func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error)
 			msg = append(msg, data)
 			continue
 		}
-		msg = append(msg, xi.String())
+		msg = append(msg, xi.Interface()) // []byte or string
 	}
 	if len(msg) < 2 {
 		return nil, ErrEmptyMessagePost
