@@ -16,9 +16,12 @@ func newctrl(service string, o *ctrl.Options[*Ctx]) Rule {
 	c := m.NewControl(service, o)
 	return func(ctx *Ctx) bool {
 		ctx.State["manager"] = c
-		gid, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
-		uid, _ := strconv.ParseUint(ctx.Message.Author.ID, 10, 64)
-		return c.Handler(int64(gid), int64(uid))
+		if ctx.Message != nil {
+			gid, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+			uid, _ := strconv.ParseUint(ctx.Message.Author.ID, 10, 64)
+			return c.Handler(int64(gid), int64(uid))
+		}
+		return false
 	}
 }
 

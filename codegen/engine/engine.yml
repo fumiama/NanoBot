@@ -1,5 +1,6 @@
 emptyon:
   - Message
+  - MessageDelete
 
   - GuildCreate
   - GuildUpdate
@@ -12,14 +13,14 @@ emptyon:
   - GuildMemberUpdate
   - GuildMemberRemove
 
-  - MessageCreate
-  - MessageDelete
+  #- MessageCreate
+  #- MessageDelete
 
   - MessageReactionAdd
   - MessageReactionRemove
 
-  - DirectMessageCreate
-  - DirectMessageDelete
+  #- DirectMessageCreate
+  #- DirectMessageDelete
 
   - OpenForumThreadCreate
   - OpenForumThreadUpdate
@@ -49,8 +50,8 @@ emptyon:
   - AudioOnMic
   - AudioOffMic
 
-  - AtMessageCreate
-  - PublicMessageDelete
+  #- AtMessageCreate
+  #- PublicMessageDelete
 
 ruleon:
   Message:

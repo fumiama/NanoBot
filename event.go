@@ -52,6 +52,11 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 		fallthrough
 	case "MessageCreate", "AtMessageCreate":
 		tp = "Message"
+	case "DirectMessageDelete":
+		ctx.IsToMe = true
+		fallthrough
+	case "MessageDelete", "PublicMessageDelete":
+		tp = "MessageDelete"
 	}
 	matcherLock.RLock()
 	n := len(matcherMap[tp])
@@ -78,6 +83,19 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 			ctx.IsToMe = true
 		}
 		log.Infoln(getLogHeader(), "=>", ctx.Message)
+	case "MessageDelete":
+		mdl := (*MessageDelete)(x.UnsafePointer())
+		opmember, err := ctx.GetGuildMemberOf(mdl.Message.GuildID, mdl.OpUser.ID)
+		if err != nil {
+			log.Warnln(getLogHeader(), "获取撤回消息者详情错误:", err)
+			return
+		}
+		ctx.Message = (*MessageDelete)(x.UnsafePointer()).Message
+		ctx.Message.Member = &Member{
+			GuildID: mdl.Message.GuildID,
+			User:    ctx.Message.Author,
+		}
+		ctx.Message.Author = opmember.User
 	}
 	go match(ctx, matchers)
 }
