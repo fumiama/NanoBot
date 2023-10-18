@@ -78,8 +78,8 @@ func (ctx *Ctx) CheckSession() Rule {
 
 // Send 发送消息到对方
 func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (reply *Message, err error) {
-	msg, ok := ctx.Value.(*Message)
-	if ok && msg != nil {
+	msg := ctx.Message
+	if msg != nil {
 		post.ReplyMessageID = msg.ID
 		if replytosender {
 			post.MessageReference = &MessageReference{
@@ -95,7 +95,7 @@ func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (reply *Message, err
 	} else {
 		reply, err = ctx.PostMessageToChannel(msg.ChannelID, post)
 	}
-	if ok && msg != nil && reply != nil && reply.ID != "" {
+	if msg != nil && reply != nil && reply.ID != "" {
 		logtriggeredmessages(msg.ID, reply.ID)
 	}
 	return
