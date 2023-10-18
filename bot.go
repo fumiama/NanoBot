@@ -253,7 +253,7 @@ func (bot *Bot) Connect() *Bot {
 			time.Sleep(2 * time.Second) // 等待两秒后重新连接
 			continue
 		}
-		bot.ready, err = payload.GetEventReady()
+		bot.ready, bot.seq, err = payload.GetEventReady()
 		if err != nil {
 			log.Warnln(getLogHeader(), "解析 EventReady 时出现错误:", err)
 			_ = conn.Close()
@@ -358,13 +358,12 @@ func (bot *Bot) Listen() {
 			continue
 		}
 		log.Debug(getLogHeader(), " 接收到第 ", payload.S, " 个事件: ", payload.Op, ", 类型: ", payload.T, ", 数据: ", BytesToString(payload.D))
-		if payload.S <= bot.seq {
-			log.Warn(getLogHeader(), " 忽略重复编号: ", payload.S, ", 事件: ", payload.Op, ", 类型: ", payload.T)
-			continue
-		}
-		bot.seq = payload.S
 		switch payload.Op {
 		case OpCodeDispatch: // Receive
+			if payload.S <= bot.seq {
+				log.Warn(getLogHeader(), " 忽略重复编号: ", payload.S, ", 事件: ", payload.Op, ", 类型: ", payload.T)
+				continue
+			}
 			switch payload.T {
 			case "RESUMED":
 				log.Infoln(getLogHeader(), bot.ready.User.Username, "的网关连接恢复完成")
@@ -395,6 +394,9 @@ func (bot *Bot) Listen() {
 		case OpCodeHTTPCallbackACK: // Reply
 		default:
 			log.Warn(getLogHeader(), " 忽略未知事件, 序号: ", payload.S, ", Op: ", payload.Op, ", 类型: ", payload.T, ", 数据: ", BytesToString(payload.D))
+		}
+		if payload.S > bot.seq {
+			bot.seq = payload.S
 		}
 	}
 }

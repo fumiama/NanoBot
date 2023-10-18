@@ -55,7 +55,7 @@ type EventReady struct {
 }
 
 // GetEventReady OpCodeDispatch READY
-func (wp *WebsocketPayload) GetEventReady() (er EventReady, err error) {
+func (wp *WebsocketPayload) GetEventReady() (er EventReady, seq uint32, err error) {
 	if wp.Op != OpCodeDispatch {
 		err = errors.New(getThisFuncName() + " unexpected OpCode " + strconv.Itoa(int(wp.Op)) + ", T: " + wp.T + ", D: " + BytesToString(wp.D))
 		return
@@ -64,6 +64,7 @@ func (wp *WebsocketPayload) GetEventReady() (er EventReady, err error) {
 		err = errors.New(getThisFuncName() + " unexpected event type " + wp.T + ", T: " + wp.T + ", D: " + BytesToString(wp.D))
 		return
 	}
+	seq = wp.S
 	err = json.Unmarshal(wp.D, &er)
 	return
 }
