@@ -77,7 +77,7 @@ func (ctx *Ctx) CheckSession() Rule {
 }
 
 // Send 发送消息到对方
-func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (*Message, error) {
+func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (reply *Message, err error) {
 	msg, ok := ctx.Value.(*Message)
 	if ok && msg != nil {
 		post.ReplyMessageID = msg.ID
@@ -91,46 +91,27 @@ func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (*Message, error) {
 	}
 
 	if msg.SrcGuildID != "" { // dms
-		return ctx.PostMessageToUser(msg.GuildID, post)
+		reply, err = ctx.PostMessageToUser(msg.GuildID, post)
+	} else {
+		reply, err = ctx.PostMessageToChannel(msg.ChannelID, post)
 	}
-	return ctx.PostMessageToChannel(msg.ChannelID, post)
+	if ok && msg != nil && reply != nil && reply.ID != "" {
+		logtriggeredmessages(msg.ID, reply.ID)
+	}
+	return
 }
 
 // SendPlainMessage 发送纯文本消息到对方
 func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message, error) {
-	msg, ok := ctx.Value.(*Message)
-	post := &MessagePost{}
-	if ok && msg != nil {
-		post.ReplyMessageID = msg.ID
-		if replytosender {
-			post.MessageReference = &MessageReference{
-				MessageID: msg.ID,
-			}
-		}
-	} else {
-		post.ReplyMessageID = "MESSAGE_CREATE"
-	}
-
-	post.Content = HideURL(fmt.Sprint(printable...))
-	if msg.SrcGuildID != "" { // dms
-		return ctx.PostMessageToUser(msg.GuildID, post)
-	}
-	return ctx.PostMessageToChannel(msg.ChannelID, post)
+	return ctx.Send(replytosender, &MessagePost{
+		Content: HideURL(fmt.Sprint(printable...)),
+	})
 }
 
 // SendImage 发送带图片消息到对方
 func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Message, error) {
-	msg, ok := ctx.Value.(*Message)
-	post := &MessagePost{}
-	if ok && msg != nil {
-		post.ReplyMessageID = msg.ID
-		if replytosender {
-			post.MessageReference = &MessageReference{
-				MessageID: msg.ID,
-			}
-		}
-	} else {
-		post.ReplyMessageID = "MESSAGE_CREATE"
+	post := &MessagePost{
+		Content: HideURL(fmt.Sprint(caption...)),
 	}
 
 	if strings.HasPrefix(file, "http") {
@@ -138,12 +119,8 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Mes
 	} else {
 		post.ImageFile = file
 	}
-	post.Content = HideURL(fmt.Sprint(caption...))
 
-	if msg.SrcGuildID != "" { // dms
-		return ctx.PostMessageToUser(msg.GuildID, post)
-	}
-	return ctx.PostMessageToChannel(msg.ChannelID, post)
+	return ctx.Send(replytosender, post)
 }
 
 // Block 匹配成功后阻止后续触发
