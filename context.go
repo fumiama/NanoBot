@@ -10,10 +10,11 @@ import (
 type Ctx struct {
 	Event
 	State
-	Caller  *Bot
 	Message *Message
-	ma      *Matcher
 	IsToMe  bool
+
+	caller *Bot
+	ma     *Matcher
 }
 
 // decoder 反射获取的数据
@@ -88,9 +89,9 @@ func (ctx *Ctx) Send(replytosender bool, post *MessagePost) (*Message, error) {
 	}
 
 	if msg.SrcGuildID != "" { // dms
-		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
+		return ctx.PostMessageToUser(msg.GuildID, post)
 	}
-	return ctx.Caller.PostMessageToChannel(msg.ChannelID, post)
+	return ctx.PostMessageToChannel(msg.ChannelID, post)
 }
 
 // SendPlainMessage 发送纯文本消息到对方
@@ -110,9 +111,9 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 
 	post.Content = HideURL(fmt.Sprint(printable...))
 	if msg.SrcGuildID != "" { // dms
-		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
+		return ctx.PostMessageToUser(msg.GuildID, post)
 	}
-	return ctx.Caller.PostMessageToChannel(msg.ChannelID, post)
+	return ctx.PostMessageToChannel(msg.ChannelID, post)
 }
 
 // SendImage 发送带图片消息到对方
@@ -138,9 +139,9 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Mes
 	post.Content = HideURL(fmt.Sprint(caption...))
 
 	if msg.SrcGuildID != "" { // dms
-		return ctx.Caller.PostMessageToUser(msg.GuildID, post)
+		return ctx.PostMessageToUser(msg.GuildID, post)
 	}
-	return ctx.Caller.PostMessageToChannel(msg.ChannelID, post)
+	return ctx.PostMessageToChannel(msg.ChannelID, post)
 }
 
 // Block 匹配成功后阻止后续触发

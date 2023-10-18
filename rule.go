@@ -43,23 +43,23 @@ func init() {
 			switch ctx.State["command"] {
 			case "响应", "response":
 				if m.CanResponse(int64(grp)) {
-					msg = ctx.Caller.ready.User.Username + "已经在工作了哦~"
+					msg = ctx.GetReady().User.Username + "已经在工作了哦~"
 					break
 				}
 				err := m.Response(int64(grp))
 				if err == nil {
-					msg = ctx.Caller.ready.User.Username + "将开始在此工作啦~"
+					msg = ctx.GetReady().User.Username + "将开始在此工作啦~"
 				} else {
 					msg = "ERROR: " + err.Error()
 				}
 			case "沉默", "silence":
 				if !m.CanResponse(int64(grp)) {
-					msg = ctx.Caller.ready.User.Username + "已经在休息了哦~"
+					msg = ctx.GetReady().User.Username + "已经在休息了哦~"
 					break
 				}
 				err := m.Silence(int64(grp))
 				if err == nil {
-					msg = ctx.Caller.ready.User.Username + "将开始休息啦~"
+					msg = ctx.GetReady().User.Username + "将开始休息啦~"
 				} else {
 					msg = "ERROR: " + err.Error()
 				}
@@ -78,14 +78,14 @@ func init() {
 			case strings.Contains(cmd, "响应") || strings.Contains(cmd, "response"):
 				err := m.Response(0)
 				if err == nil {
-					msg = ctx.Caller.ready.User.Username + "将开始在此工作啦~"
+					msg = ctx.GetReady().User.Username + "将开始在此工作啦~"
 				} else {
 					msg = "ERROR: " + err.Error()
 				}
 			case strings.Contains(cmd, "沉默") || strings.Contains(cmd, "silence"):
 				err := m.Silence(0)
 				if err == nil {
-					msg = ctx.Caller.ready.User.Username + "将开始休息啦~"
+					msg = ctx.GetReady().User.Username + "将开始休息啦~"
 				} else {
 					msg = "ERROR: " + err.Error()
 				}
@@ -188,7 +188,7 @@ func init() {
 								service.Permit(uid, int64(grp))
 								msg += "\n+ 已允许" + usr
 							} else {
-								member, err := ctx.Caller.GetGuildMemberOf(ctx.Message.GuildID, usr)
+								member, err := ctx.GetGuildMemberOf(ctx.Message.GuildID, usr)
 								if err == nil && !member.Pending {
 									service.Permit(uid, int64(grp))
 									msg += "\n+ 已允许" + usr
@@ -206,7 +206,7 @@ func init() {
 								service.Ban(uid, int64(grp))
 								msg += "\n- 已禁止" + usr
 							} else {
-								member, err := ctx.Caller.GetGuildMemberOf(ctx.Message.GuildID, usr)
+								member, err := ctx.GetGuildMemberOf(ctx.Message.GuildID, usr)
 								if err == nil && !member.Pending {
 									service.Ban(uid, int64(grp))
 									msg += "\n- 已禁止" + usr

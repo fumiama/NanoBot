@@ -18,7 +18,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var clients = syncx.Map[string, *Bot]{}
+var (
+	clients   = syncx.Map[string, *Bot]{}
+	isrunning uintptr
+)
 
 // Bot 一个机器人实例的配置
 type Bot struct {
@@ -29,8 +32,9 @@ type Bot struct {
 	Timeout    time.Duration   // Timeout is API 调用超时
 	Handler    *Handler        `json:"-"` // Handler 注册对各种事件的处理
 	Intents    uint32          // Intents 欲接收的事件
+	ShardIndex uint8           // ShardIndex 本连接为第几个分片, 默认 1, 0 为不使用分片
+	ShardCount uint8           // ShardCount 分片总数
 	shard      [2]byte         // shard 分片
-	ShardIndex uint16          // ShardIndex 本连接为第几个分片, 默认 1, 0 为不使用分片
 	Properties json.RawMessage // Properties 一些环境变量, 目前没用
 
 	gateway   string                      // gateway 获得的网关
@@ -43,6 +47,11 @@ type Bot struct {
 	client    *http.Client                // client 主要配置 timeout
 
 	ready EventReady // ready 连接成功后下发的 bot 基本信息
+}
+
+// GetReady 获得 bot 基本信息
+func (ctx *Ctx) GetReady() *EventReady {
+	return &ctx.caller.ready
 }
 
 // getinitinfo 获得 gateway 和 shard
@@ -62,19 +71,26 @@ func (b *Bot) getinitinfo() (gw string, shard [2]byte, err error) {
 		if err != nil {
 			return
 		}
-		if sgw.Shards <= int(b.ShardIndex) {
+		if b.ShardCount == 0 {
+			log.Infoln(getLogHeader(), "使用网关推荐Shards数:", sgw.Shards)
+			b.ShardCount = uint8(sgw.Shards)
+		}
+		if b.ShardCount <= b.ShardIndex {
 			err = errors.New("shard index " + strconv.Itoa(int(b.ShardIndex)) + " >= suggested size " + strconv.Itoa(sgw.Shards))
 			return
 		}
 		gw = sgw.URL
 		shard[0] = byte(b.ShardIndex)
-		shard[1] = byte(sgw.Shards)
+		shard[1] = byte(b.ShardCount)
 	}
 	return
 }
 
 // Start clients without blocking
 func Start(bots ...*Bot) error {
+	if !atomic.CompareAndSwapUintptr(&isrunning, 0, 1) {
+		log.Warnln(getLogHeader(), "已忽略重复调用的", getThisFuncName())
+	}
 	for _, b := range bots {
 		gw, shard, err := b.getinitinfo()
 		if err != nil {
@@ -86,7 +102,10 @@ func Start(bots ...*Bot) error {
 }
 
 // Run clients and block self in listening last one
-func Run(bots ...*Bot) error {
+func Run(preblock func(), bots ...*Bot) error {
+	if !atomic.CompareAndSwapUintptr(&isrunning, 0, 1) {
+		log.Warnln(getLogHeader(), "已忽略重复调用的", getThisFuncName())
+	}
 	var b *Bot
 	switch len(bots) {
 	case 0:
@@ -113,7 +132,11 @@ func Run(bots ...*Bot) error {
 		}
 		b.Init(gw, shard)
 	}
-	b.Connect().Listen()
+	b.Connect()
+	if preblock != nil {
+		preblock()
+	}
+	b.Listen()
 	return nil
 }
 
@@ -151,11 +174,6 @@ func (b *Bot) Init(gateway string, shard [2]byte) *Bot {
 // Authorization 返回 Authorization Header value
 func (bot *Bot) Authorization() string {
 	return "Bot " + bot.AppID + "." + bot.Token
-}
-
-// AtMe 返回 <@!bot.ready.User.ID>
-func (bot *Bot) AtMe() string {
-	return "<@!" + bot.ready.User.ID + ">"
 }
 
 // receive 收一个 payload

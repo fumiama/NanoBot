@@ -321,7 +321,7 @@ func SuperUserPermission(ctx *Ctx) bool {
 		if msg.Author == nil { // 确保无空
 			return false
 		}
-		for _, su := range ctx.Caller.SuperUsers {
+		for _, su := range ctx.caller.SuperUsers {
 			if su == msg.Author.ID {
 				return true
 			}
@@ -431,7 +431,7 @@ func MustProvidePhoto(onmessage string, needphohint, failhint string) Rule {
 		}
 		// 没有图片就索取
 		if needphohint != "" {
-			_, err := ctx.Caller.PostMessageToChannel(msg.ChannelID, &MessagePost{
+			_, err := ctx.PostMessageToChannel(msg.ChannelID, &MessagePost{
 				Content:          needphohint,
 				MessageReference: &MessageReference{MessageID: msg.ID},
 				ReplyMessageID:   msg.ID,

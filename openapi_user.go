@@ -17,6 +17,11 @@ func (u *User) At() string {
 	return "<@!" + u.ID + ">"
 }
 
+// AtMe 返回 <@!bot.ready.User.ID>
+func (bot *Bot) AtMe() string {
+	return "<@!" + bot.ready.User.ID + ">"
+}
+
 // GetMyInfo 获取当前用户（机器人）详情
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/user/me.html

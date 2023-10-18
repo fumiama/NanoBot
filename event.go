@@ -44,7 +44,7 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 			Seq:  payload.S,
 		},
 		State:  State{},
-		Caller: bot,
+		caller: bot,
 	}
 	switch tp {
 	case "DirectMessageCreate":
@@ -86,14 +86,14 @@ func match(ctx *Ctx, matchers []*Matcher) {
 	if ctx.Message != nil && ctx.Message.Content != "" { // 确保无空
 		if !ctx.IsToMe {
 			ctx.IsToMe = func(ctx *Ctx) bool {
-				name := ctx.Caller.ready.User.Username
+				name := ctx.GetReady().User.Username
 				if strings.HasPrefix(ctx.Message.Content, name) {
 					log.Debugln(getLogHeader(), "message before process:", ctx.Message.Content)
 					ctx.Message.Content = strings.TrimLeft(ctx.Message.Content[len(name):], " ")
 					log.Debugln(getLogHeader(), "message after process:", ctx.Message.Content)
 					return true
 				}
-				atme := ctx.Caller.AtMe()
+				atme := ctx.AtMe()
 				if strings.HasPrefix(ctx.Message.Content, atme) {
 					log.Debugln(getLogHeader(), "message before process:", ctx.Message.Content)
 					ctx.Message.Content = strings.TrimLeft(ctx.Message.Content[len(atme):], " ")

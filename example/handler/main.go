@@ -10,7 +10,7 @@ import (
 func main() {
 	log.SetLevel(log.DebugLevel)
 	nano.OpenAPI = nano.SandboxAPI
-	nano.Run(&nano.Bot{
+	nano.Run(nil, &nano.Bot{
 		AppID:   "你的AppID",
 		Token:   "你的Token",
 		Secret:  "你的Secret, 目前没用到, 可以不填",
