@@ -177,7 +177,27 @@ func (mdl *MessageDelete) String() string {
 	sb.WriteString("用户ID ")
 	sb.WriteString(mdl.OpUser.ID)
 	sb.WriteString(" 删除了消息: ")
-	sb.WriteString(mdl.Message.String())
+	sb.WriteString(mdl.Message.ID)
+	sb.WriteString(" ｷﾞﾙﾄﾞ: ")
+	sb.WriteString(mdl.Message.GuildID)
+	if mdl.Message.SrcGuildID != "" {
+		sb.WriteString(", 元ｷﾞﾙﾄﾞ: ")
+		sb.WriteString(mdl.Message.SrcGuildID)
+	}
+	sb.WriteString(", 频道: ")
+	sb.WriteString(mdl.Message.ChannelID)
+	if mdl.Message.Member.User != nil {
+		sb.WriteString(", 用户: ")
+		sb.WriteString(mdl.Message.Member.User.Username)
+		sb.WriteByte('(')
+		sb.WriteString(mdl.Message.Member.User.ID)
+		sb.WriteByte(')')
+		if mdl.Message.Member.User.Bot {
+			sb.WriteString("(机器人)")
+		}
+	} else {
+		sb.WriteString(", 用户: 未知")
+	}
 	return sb.String()
 }
 
