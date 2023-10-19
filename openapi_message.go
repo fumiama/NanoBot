@@ -42,9 +42,11 @@ type Message struct {
 // "=> ｷﾞﾙﾄﾞ:", ctx.Message.GuildID+", 频道:", ctx.Message.ChannelID+", 用户:", ctx.Message.Author.Username+"("+ctx.Message.Author.ID+"), 内容:", ctx.Message.Content
 func (m *Message) String() string {
 	sb := strings.Builder{}
-	sb.WriteByte('[')
-	sb.WriteString(m.SeqInChannel)
-	sb.WriteByte(']')
+	if m.SeqInChannel != "" {
+		sb.WriteByte('[')
+		sb.WriteString(m.SeqInChannel)
+		sb.WriteByte(']')
+	}
 	sb.WriteString(m.ID)
 	sb.WriteString(" ｷﾞﾙﾄﾞ: ")
 	sb.WriteString(m.GuildID)
@@ -172,9 +174,9 @@ type MessageDelete struct {
 
 func (mdl *MessageDelete) String() string {
 	sb := strings.Builder{}
-	sb.WriteString("用户: ")
+	sb.WriteString("用户ID ")
 	sb.WriteString(mdl.OpUser.ID)
-	sb.WriteString("删除了消息: ")
+	sb.WriteString(" 删除了消息: ")
 	sb.WriteString(mdl.Message.String())
 	return sb.String()
 }
