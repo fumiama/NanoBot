@@ -287,11 +287,8 @@ func CheckGuild(guildID ...string) Rule {
 	}
 }
 
-// OnlyDirect requires that the ctx.Event is direct message
+// OnlyDirect requires that the ctx.Type is direct message
 func OnlyDirect(ctx *Ctx) bool {
-	if ctx.Message != nil {
-		return ctx.Message.SrcGuildID != ""
-	}
 	if ctx.Type != "" {
 		return strings.HasPrefix(ctx.Type, "Direct")
 	}
@@ -303,11 +300,8 @@ func OnlyChannel(ctx *Ctx) bool {
 	return !OnlyDirect(ctx)
 }
 
-// OnlyPublic requires that the ctx.Event is public message
+// OnlyPublic requires that the ctx.Type is at/public message
 func OnlyPublic(ctx *Ctx) bool {
-	if ctx.Message != nil && ctx.Message.SrcGuildID != "" {
-		return false
-	}
 	if ctx.Type != "" {
 		return strings.HasPrefix(ctx.Type, "At") || strings.HasPrefix(ctx.Type, "Public")
 	}
