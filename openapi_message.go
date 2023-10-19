@@ -170,6 +170,15 @@ type MessageDelete struct {
 	OpUser  *User    `json:"op_user"`
 }
 
+func (mdl *MessageDelete) String() string {
+	sb := strings.Builder{}
+	sb.WriteString("用户: ")
+	sb.WriteString(mdl.OpUser.ID)
+	sb.WriteString("删除了消息: ")
+	sb.WriteString(mdl.Message.String())
+	return sb.String()
+}
+
 // MessageAudited 消息审核对象
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/model.html#%E6%B6%88%E6%81%AF%E5%AE%A1%E6%A0%B8%E5%AF%B9%E8%B1%A1-messageaudited

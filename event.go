@@ -96,6 +96,7 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 			User:    ctx.Message.Author,
 		}
 		ctx.Message.Author = opmember.User
+		log.Infoln(getLogHeader(), "x>", mdl)
 	}
 	go match(ctx, matchers)
 }
