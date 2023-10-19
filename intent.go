@@ -15,10 +15,16 @@ const (
 	IntentAudioAction              = 1 << 29
 	IntentPublicGuildMessages      = 1 << 30
 
+	// IntentAll 监听全部事件
 	IntentAll = IntentGuilds | IntentGuildMembers | IntentGuildMessages | IntentGuildMessageReactions |
 		IntentDirectMessage | IntentOpenForumsEvent | IntentAudioOrLiveChannelMember | IntentInteraction |
 		IntentMessageAudit | IntentForumsEvent | IntentAudioAction | IntentPublicGuildMessages
+	// IntentPublic 监听公域事件
 	IntentPublic = IntentGuilds | IntentGuildMembers | IntentGuildMessageReactions |
 		IntentDirectMessage | IntentOpenForumsEvent | IntentAudioOrLiveChannelMember | IntentInteraction |
 		IntentMessageAudit | IntentAudioAction | IntentPublicGuildMessages
+	// IntentPrivate 监听私域事件
+	IntentPrivate = IntentGuilds | IntentGuildMembers | IntentGuildMessages | IntentGuildMessageReactions |
+		IntentDirectMessage | IntentAudioOrLiveChannelMember | IntentInteraction |
+		IntentMessageAudit | IntentForumsEvent | IntentAudioAction
 )

@@ -298,9 +298,9 @@ func OnlyDirect(ctx *Ctx) bool {
 	return false
 }
 
-// OnlyChannel requires that the ctx.Event is channel message
+// OnlyChannel is !OnlyDirect
 func OnlyChannel(ctx *Ctx) bool {
-	return !OnlyPrivate(ctx)
+	return !OnlyDirect(ctx)
 }
 
 // OnlyPublic requires that the ctx.Event is public message
@@ -314,7 +314,7 @@ func OnlyPublic(ctx *Ctx) bool {
 	return false
 }
 
-// OnlyPrivate requires that the ctx.Event is not public message
+// OnlyPrivate is !OnlyPublic
 func OnlyPrivate(ctx *Ctx) bool {
 	return !OnlyPublic(ctx)
 }
