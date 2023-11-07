@@ -3,7 +3,7 @@ module github.com/fumiama/NanoBot
 go 1.20
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20231017134949-ae5059ebace7
+	github.com/FloatTech/floatbox v0.0.0-20231107124407-e38535efa2a2
 	github.com/FloatTech/ttl v0.0.0-20230307105452-d6f7b2b647d1
 	github.com/FloatTech/zbpctrl v1.6.0
 	github.com/RomiChan/syncx v0.0.0-20221202055724-5f842c53020e
