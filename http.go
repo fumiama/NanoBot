@@ -19,14 +19,19 @@ import (
 )
 
 // HTTPRequsetConstructer ...
-type HTTPRequsetConstructer func(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error)
+type HTTPRequsetConstructer func(ep string, contenttype string, auth, appid string, body io.Reader) (*http.Request, error)
 
-func newHTTPEndpointRequestWithAuth(method, contenttype, ep string, auth string, body io.Reader) (req *http.Request, err error) {
-	req, err = http.NewRequest(method, OpenAPI+ep, body)
+func newHTTPEndpointRequestWithAuth(method, contenttype, ep string, auth, appid string, body io.Reader) (req *http.Request, err error) {
+	req, err = http.NewRequest(method, ep, body)
 	if err != nil {
 		return
 	}
-	req.Header.Add("Authorization", auth)
+	if auth != "" {
+		req.Header.Add("Authorization", auth)
+	}
+	if appid != "" {
+		req.Header.Add("X-Union-Appid", appid)
+	}
 	if contenttype == "" {
 		contenttype = "application/json"
 	}
@@ -35,28 +40,28 @@ func newHTTPEndpointRequestWithAuth(method, contenttype, ep string, auth string,
 }
 
 // NewHTTPEndpointGetRequestWithAuth 新建带鉴权头的 HTTP GET 请求
-func NewHTTPEndpointGetRequestWithAuth(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error) {
-	return newHTTPEndpointRequestWithAuth("GET", contenttype, ep, auth, body)
+func NewHTTPEndpointGetRequestWithAuth(ep string, contenttype string, auth, appid string, body io.Reader) (*http.Request, error) {
+	return newHTTPEndpointRequestWithAuth("GET", contenttype, OpenAPI+ep, auth, appid, body)
 }
 
 // NewHTTPEndpointPutRequestWithAuth 新建带鉴权头的 HTTP PUT 请求
-func NewHTTPEndpointPutRequestWithAuth(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error) {
-	return newHTTPEndpointRequestWithAuth("PUT", contenttype, ep, auth, body)
+func NewHTTPEndpointPutRequestWithAuth(ep string, contenttype string, auth, appid string, body io.Reader) (*http.Request, error) {
+	return newHTTPEndpointRequestWithAuth("PUT", contenttype, OpenAPI+ep, auth, appid, body)
 }
 
 // NewHTTPEndpointDeleteRequestWithAuth 新建带鉴权头的 HTTP DELETE 请求
-func NewHTTPEndpointDeleteRequestWithAuth(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error) {
-	return newHTTPEndpointRequestWithAuth("DELETE", contenttype, ep, auth, body)
+func NewHTTPEndpointDeleteRequestWithAuth(ep string, contenttype string, auth, appid string, body io.Reader) (*http.Request, error) {
+	return newHTTPEndpointRequestWithAuth("DELETE", contenttype, OpenAPI+ep, auth, appid, body)
 }
 
 // NewHTTPEndpointPostRequestWithAuth 新建带鉴权头的 HTTP POST 请求
-func NewHTTPEndpointPostRequestWithAuth(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error) {
-	return newHTTPEndpointRequestWithAuth("POST", contenttype, ep, auth, body)
+func NewHTTPEndpointPostRequestWithAuth(ep string, contenttype string, auth, appid string, body io.Reader) (*http.Request, error) {
+	return newHTTPEndpointRequestWithAuth("POST", contenttype, OpenAPI+ep, auth, appid, body)
 }
 
 // NewHTTPEndpointPatchRequestWithAuth 新建带鉴权头的 HTTP PATCH 请求
-func NewHTTPEndpointPatchRequestWithAuth(ep string, contenttype string, auth string, body io.Reader) (*http.Request, error) {
-	return newHTTPEndpointRequestWithAuth("PATCH", contenttype, ep, auth, body)
+func NewHTTPEndpointPatchRequestWithAuth(ep string, contenttype string, auth, appid string, body io.Reader) (*http.Request, error) {
+	return newHTTPEndpointRequestWithAuth("PATCH", contenttype, OpenAPI+ep, auth, appid, body)
 }
 
 // WriteHTTPQueryIfNotNil 如果非空则将请求添加到 baseurl 后

@@ -17,6 +17,8 @@ const (
 	StandardAPI = `https://api.sgroup.qq.com`
 	// SandboxAPI 沙箱环境接口域名
 	SandboxAPI = `https://sandbox.api.sgroup.qq.com`
+	// AccessTokenAPI 获取接口凭证的 API
+	AccessTokenAPI = "https://bots.qq.com/app/getAppAccessToken"
 )
 
 var (
@@ -30,7 +32,11 @@ type CodeMessageBase struct {
 }
 
 func (bot *Bot) dohttprequest(constructer HTTPRequsetConstructer, ep, contenttype string, ptr any, body io.Reader) error {
-	req, err := constructer(ep, contenttype, bot.Authorization(), body)
+	appid := ""
+	if bot.IsV2() {
+		appid = bot.AppID
+	}
+	req, err := constructer(ep, contenttype, bot.Authorization(), appid, body)
 	if err != nil {
 		return errors.Wrap(err, getCallerFuncName())
 	}
