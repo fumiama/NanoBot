@@ -68,13 +68,13 @@ func (bot *Bot) getinitinfo() (secret, gw string, shard [2]byte, err error) {
 		bot.Secret = ""
 	}
 	if bot.ShardIndex == 0 {
-		gw, err = bot.GetGeneralWSSGateway()
+		gw, err = bot.GetGeneralWSSGatewayNoContext()
 		if err != nil {
 			return
 		}
 	} else {
 		var sgw *ShardWSSGateway
-		sgw, err = bot.GetShardWSSGateway()
+		sgw, err = bot.GetShardWSSGatewayNoContext()
 		if err != nil {
 			return
 		}
@@ -178,7 +178,7 @@ func (bot *Bot) Init(secret, gateway string, shard [2]byte) *Bot {
 	bot.Secret = secret
 	if bot.IsV2() {
 		for {
-			err := bot.GetAppAccessToken()
+			err := bot.GetAppAccessTokenNoContext()
 			if err == nil {
 				log.Infoln(getLogHeader(), "获得 Token: "+bot.token+", 超时:", bot.expiresec, "秒")
 				bot.exonce.Do(func() {
@@ -310,7 +310,7 @@ func (bot *Bot) refreshtoken() {
 			continue
 		}
 		time.Sleep(time.Duration(bot.expiresec) * time.Second)
-		err := bot.GetAppAccessToken()
+		err := bot.GetAppAccessTokenNoContext()
 		if err != nil {
 			log.Warnln(getLogHeader(), "刷新 Token 时出现错误:", err)
 		} else {

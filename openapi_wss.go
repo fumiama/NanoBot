@@ -13,10 +13,10 @@ var (
 	ErrInvalidExpire = errors.New("invalid expire")
 )
 
-// GetGeneralWSSGateway 获取通用 WSS 接入点
+// GetGeneralWSSGatewayNoContext 获取通用 WSS 接入点
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/wss/url_get.html
-func (bot *Bot) GetGeneralWSSGateway() (string, error) {
+func (bot *Bot) GetGeneralWSSGatewayNoContext() (string, error) {
 	resp := struct {
 		CodeMessageBase
 		U string `json:"url"`
@@ -39,17 +39,17 @@ type ShardWSSGateway struct {
 	} `json:"session_start_limit"`
 }
 
-// GetShardWSSGateway 获取带分片 WSS 接入点
+// GetShardWSSGatewayNoContext 获取带分片 WSS 接入点
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/wss/shard_url_get.html
-func (bot *Bot) GetShardWSSGateway() (*ShardWSSGateway, error) {
+func (bot *Bot) GetShardWSSGatewayNoContext() (*ShardWSSGateway, error) {
 	return bot.getOpenAPIofShardWSSGateway("/gateway/bot")
 }
 
-// GetAppAccessToken 获取接口凭证并保存到 bot.Token
+// GetAppAccessTokenNoContext 获取接口凭证并保存到 bot.Token
 //
 // https://bot.q.qq.com/wiki/develop/api-231017/dev-prepare/interface-framework/api-use.html#%E8%8E%B7%E5%8F%96%E6%8E%A5%E5%8F%A3%E5%87%AD%E8%AF%81
-func (bot *Bot) GetAppAccessToken() error {
+func (bot *Bot) GetAppAccessTokenNoContext() error {
 	req, err := newHTTPEndpointRequestWithAuth("POST", "", AccessTokenAPI, "", "", WriteBodyFromJSON(&struct {
 		A string `json:"appId"`
 		S string `json:"clientSecret"`

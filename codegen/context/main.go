@@ -38,6 +38,9 @@ package nano
 		f.WriteString(path)
 		f.WriteString(" vvvvvvvvvvvvvvvvvvvvv */\n")
 		for _, define := range apire.FindAllStringSubmatch(nano.BytesToString(data), -1) {
+			if strings.Contains(define[3], "NoContext") {
+				continue
+			}
 			f.WriteString(define[1])          // 注释
 			f.WriteString("func (ctx *Ctx) ") // 函数声明
 			f.WriteString(define[3])

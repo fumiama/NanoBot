@@ -1,10 +1,12 @@
 package nano
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 )
 
 //go:generate go run codegen/context/main.go
@@ -14,6 +16,7 @@ type Ctx struct {
 	State
 	Message *Message
 	IsToMe  bool
+	IsQQ    bool
 
 	caller *Bot
 	ma     *Matcher
@@ -96,6 +99,9 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 				return
 			}
 		case MessageTypeImageBytes:
+			if ctx.IsQQ {
+				continue
+			}
 			reply, err = ctx.SendImageBytes(StringToBytes(msg.Data), isnextreply, textlist...)
 			if isnextreply {
 				isnextreply = false
@@ -107,6 +113,28 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 			}
 		case MessageTypeReply:
 			isnextreply = true
+		case MessageTypeAudio, MessageTypeVideo:
+			if !ctx.IsQQ {
+				continue
+			}
+			fp := &FilePost{
+				URL: msg.Data,
+			}
+			if msg.Type == MessageTypeAudio {
+				fp.Type = FileTypeAudio
+			} else if msg.Type == MessageTypeVideo {
+				fp.Type = FileTypeVideo
+			}
+			var idts *IDTimestampMessageResult
+			if OnlyQQGroup(ctx) {
+				idts, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
+			} else if OnlyQQPrivate(ctx) {
+				idts, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
+			}
+			if err != nil {
+				return
+			}
+			reply = &Message{ID: idts.ID, Timestamp: time.Unix(int64(idts.Timestamp), 0)}
 		}
 	}
 	if len(textlist) > 0 {
@@ -126,7 +154,7 @@ func (ctx *Ctx) Post(replytosender bool, post *MessagePost) (reply *Message, err
 	msg := ctx.Message
 	if msg != nil {
 		post.ReplyMessageID = msg.ID
-		if replytosender {
+		if OnlyGuild(ctx) && replytosender {
 			post.MessageReference = &MessageReference{
 				MessageID: msg.ID,
 			}
@@ -135,12 +163,43 @@ func (ctx *Ctx) Post(replytosender bool, post *MessagePost) (reply *Message, err
 		post.ReplyMessageID = "MESSAGE_CREATE"
 	}
 
-	if msg.SrcGuildID != "" { // dms
+	if OnlyDirect(ctx) { // dms
 		reply, err = ctx.PostMessageToUser(msg.GuildID, post)
-	} else {
+	} else if OnlyChannel(ctx) {
 		reply, err = ctx.PostMessageToChannel(msg.ChannelID, post)
+	} else { // v2
+		var idts *IDTimestampMessageResult
+		typ := MessageTypeV2Text
+		switch {
+		case post.Markdown != nil:
+			typ = MessageTypeV2Markdown
+		case post.Ark != nil:
+			typ = MessageTypeV2Ark
+		case post.Embed != nil:
+			typ = MessageTypeV2Embed
+		}
+		v2post := &MessagePostV2{
+			Type:             typ,
+			Seq:              len(GetTriggeredMessages(msg.ID)) + 1,
+			Content:          post.Content,
+			ReplyMessageID:   post.ReplyMessageID,
+			MessageReference: post.MessageReference,
+			Markdown:         post.Markdown,
+			KeyBoard:         post.KeyBoard,
+			Ark:              post.Ark,
+			Embed:            post.Embed,
+		}
+		if OnlyQQGroup(ctx) {
+			idts, err = ctx.PostMessageToQQGroup(msg.ChannelID, v2post)
+		} else if OnlyQQPrivate(ctx) {
+			idts, err = ctx.PostMessageToQQUser(msg.ChannelID, v2post)
+		}
+		reply = &Message{
+			ID:        idts.ID,
+			Timestamp: time.Unix(int64(idts.Timestamp), 0),
+		}
 	}
-	if msg != nil && reply != nil && reply.ID != "" {
+	if err != nil && msg != nil && reply != nil && reply.ID != "" {
 		logtriggeredmessages(msg.ID, reply.ID)
 	}
 	return
@@ -155,6 +214,25 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 
 // SendImage 发送带图片消息到对方
 func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Message, error) {
+	if OnlyQQ(ctx) {
+		var idts *IDTimestampMessageResult
+		var err error
+		fp := &FilePost{
+			Type: FileTypeImage,
+			URL:  file,
+		}
+		_, _ = ctx.SendPlainMessage(replytosender, caption...)
+		if OnlyQQGroup(ctx) {
+			idts, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
+		} else if OnlyQQPrivate(ctx) {
+			idts, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
+		}
+		if err != nil {
+			return nil, err
+		}
+		return &Message{ID: idts.ID, Timestamp: time.Unix(int64(idts.Timestamp), 0)}, nil
+	}
+
 	post := &MessagePost{
 		Content: HideURL(fmt.Sprint(caption...)),
 	}
@@ -170,6 +248,10 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Mes
 
 // SendImageBytes 发送带图片消息到对方
 func (ctx *Ctx) SendImageBytes(data []byte, replytosender bool, caption ...any) (*Message, error) {
+	if OnlyQQ(ctx) {
+		return nil, errors.New("QQ暂不支持直接发送图片数据")
+	}
+
 	post := &MessagePost{
 		Content: HideURL(fmt.Sprint(caption...)),
 	}

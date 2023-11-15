@@ -287,7 +287,17 @@ func CheckGuild(guildID ...string) Rule {
 	}
 }
 
-// OnlyDirect requires that the ctx.Type is direct message
+// OnlyQQ 必须是 QQ 消息
+func OnlyQQ(ctx *Ctx) bool {
+	return ctx.IsQQ
+}
+
+// OnlyGuild 必须是频道消息
+func OnlyGuild(ctx *Ctx) bool {
+	return !ctx.IsQQ
+}
+
+// OnlyDirect 必须是频道私聊
 func OnlyDirect(ctx *Ctx) bool {
 	if ctx.Type != "" {
 		return strings.HasPrefix(ctx.Type, "Direct")
@@ -295,12 +305,12 @@ func OnlyDirect(ctx *Ctx) bool {
 	return false
 }
 
-// OnlyChannel is !OnlyDirect
+// OnlyChannel 必须是频道 Channel
 func OnlyChannel(ctx *Ctx) bool {
-	return !OnlyDirect(ctx)
+	return !OnlyDirect(ctx) && !OnlyQQ(ctx)
 }
 
-// OnlyPublic requires that the ctx.Type is at/public message
+// OnlyPublic 消息类型包含 At 或 Public (包括QQ群)
 func OnlyPublic(ctx *Ctx) bool {
 	if ctx.Type != "" {
 		return strings.HasPrefix(ctx.Type, "At") || strings.HasPrefix(ctx.Type, "Public")
@@ -308,9 +318,19 @@ func OnlyPublic(ctx *Ctx) bool {
 	return false
 }
 
-// OnlyPrivate is !OnlyPublic
+// OnlyPrivate is !OnlyPublic (包括QQ私聊)
 func OnlyPrivate(ctx *Ctx) bool {
 	return !OnlyPublic(ctx)
+}
+
+// OnlyQQGroup 只在 QQ 群
+func OnlyQQGroup(ctx *Ctx) bool {
+	return ctx.Type == "GroupAtMessageCreate"
+}
+
+// OnlyQQPrivate 只在 QQ 私聊
+func OnlyQQPrivate(ctx *Ctx) bool {
+	return ctx.Type == "C2cMessageCreate"
 }
 
 // SuperUserPermission only triggered by the bot's owner

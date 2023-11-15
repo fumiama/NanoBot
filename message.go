@@ -34,6 +34,8 @@ const (
 	MessageTypeImage
 	MessageTypeImageBytes
 	MessageTypeReply
+	MessageTypeAudio
+	MessageTypeVideo
 )
 
 // Message impl the array form of message
@@ -111,6 +113,24 @@ func AtChannel(id string) MessageSegment {
 	return MessageSegment{
 		Type: MessageTypeText,
 		Data: "<#channel_id>",
+	}
+}
+
+// Record QQ 语音
+// https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html
+func Record(url string) MessageSegment {
+	return MessageSegment{
+		Type: MessageTypeAudio,
+		Data: url,
+	}
+}
+
+// Video QQ 视频
+// https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html
+func Video(url string) MessageSegment {
+	return MessageSegment{
+		Type: MessageTypeVideo,
+		Data: url,
 	}
 }
 
