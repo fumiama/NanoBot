@@ -18,7 +18,7 @@ func main() {
 		AppID:      "你的AppID",
 		Token:      "你的Token",
 		Secret:     "你的Secret, 目前没用到, 可以不填",
-		Intents:    nano.IntentPublic,
+		Intents:    nano.IntentGuildPublic,
 		SuperUsers: []string{"用户ID1", "用户ID2"},
 	})
 }
