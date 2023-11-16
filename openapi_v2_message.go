@@ -53,7 +53,7 @@ type MessageV2 struct {
 type MessagePostV2 struct {
 	Type           MessageTypeV2 `json:"msg_type"`
 	Seq            int           `json:"msg_seq,omitempty"` // 回复消息的序号，与 msg_id 联合使用，避免相同消息id回复重复发送，不填默认是1。相同的 msg_id + msg_seq 重复发送会失败。
-	Content        string        `json:"content,omitempty"`
+	Content        string        `json:"content"`
 	ReplyEventID   string        `json:"event_id,omitempty"` // 前置收到的事件ID，用于发送被动消息
 	ReplyMessageID string        `json:"msg_id,omitempty"`
 

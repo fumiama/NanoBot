@@ -98,6 +98,7 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 			} else if msgv2.Author.MemberOpenID != "" {
 				ctx.Message.Author.ID = msgv2.Author.MemberOpenID
 			}
+			ctx.Value = ctx.Message
 		} else {
 			ctx.Message = (*Message)(x.UnsafePointer())
 			if ctx.Message.MentionEveryone {
