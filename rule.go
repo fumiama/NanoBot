@@ -41,7 +41,11 @@ func init() {
 		}, UserOrGrpAdmin).SetBlock(true).Limit(func(ctx *Ctx) *rate.Limiter {
 			return respLimiterManager.Load(ctx.Message.ChannelID)
 		}).secondPriority().Handle(func(ctx *Ctx) {
-			grp, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+			grp := ctx.SenderID()
+			if grp == 0 {
+				return
+			}
+
 			msg := ""
 			switch ctx.State["command"] {
 			case "响应", "response":
@@ -101,7 +105,7 @@ func init() {
 		OnMessageCommandGroup([]string{
 			"启用", "enable", "禁用", "disable",
 		}, UserOrGrpAdmin).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
-			grp, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+			grp := ctx.SenderID()
 			if !m.CanResponse(int64(grp)) {
 				return
 			}
@@ -149,7 +153,7 @@ func init() {
 		})
 
 		OnMessageCommandGroup([]string{"还原", "reset"}, UserOrGrpAdmin).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
-			grp, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+			grp := ctx.SenderID()
 			if !m.CanResponse(int64(grp)) {
 				return
 			}
@@ -167,7 +171,7 @@ func init() {
 		OnMessageCommandGroup([]string{
 			"禁止", "ban", "允许", "permit",
 		}, AdminPermission).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
-			grp, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+			grp := ctx.SenderID()
 			if !m.CanResponse(int64(grp)) {
 				return
 			}
@@ -180,7 +184,7 @@ func init() {
 					_, _ = ctx.SendPlainMessage(false, "没有找到指定服务!")
 					return
 				}
-				grp, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+				grp := ctx.SenderID()
 				msg := "*" + args[0] + "报告*"
 				issu := SuperUserPermission(ctx)
 				if strings.Contains(model.Command, "允许") || strings.Contains(model.Command, "permit") {
@@ -323,8 +327,7 @@ func init() {
 					return
 				}
 				if service.Options.Help != "" {
-					gid := ctx.Message.ChannelID
-					grp, _ := strconv.ParseUint(gid, 10, 64)
+					grp := ctx.SenderID()
 					_, _ = ctx.SendPlainMessage(false, service.EnableMarkIn(int64(grp)), " ", service)
 				} else {
 					_, _ = ctx.SendPlainMessage(false, "该服务无帮助!")
@@ -333,13 +336,12 @@ func init() {
 
 		OnMessageCommandGroup([]string{"服务列表", "service_list"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
-				gid := ctx.Message.ChannelID
+				grp := ctx.SenderID()
 				m.RLock()
 				msg := make([]any, 1, len(m.M)*4+1)
 				m.RUnlock()
 				msg[0] = "--------服务列表--------\n发送\"/用法 name\"查看详情\n发送\"/响应\"启用会话"
 				ForEachByPrio(func(i int, service *ctrl.Control[*Ctx]) bool {
-					grp, _ := strconv.ParseUint(gid, 10, 64)
 					msg = append(msg, "\n", i+1, ": ", service.EnableMarkIn(int64(grp)), service.Service)
 					return true
 				})
@@ -348,13 +350,12 @@ func init() {
 
 		OnMessageCommandGroup([]string{"服务详情", "service_detail"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
-				gid := ctx.Message.ChannelID
+				grp := ctx.SenderID()
 				m.RLock()
 				msgs := make([]any, 1, len(m.M)*7+1)
 				m.RUnlock()
 				msgs[0] = "---服务详情---\n"
 				ForEachByPrio(func(i int, service *ctrl.Control[*Ctx]) bool {
-					grp, _ := strconv.ParseUint(gid, 10, 64)
 					msgs = append(msgs, i+1, ": ", service.EnableMarkIn(int64(grp)), service.Service, "\n", service, "\n\n")
 					return true
 				})

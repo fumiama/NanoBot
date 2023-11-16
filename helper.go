@@ -2,6 +2,8 @@ package nano
 
 import (
 	"encoding/base64"
+	"encoding/hex"
+	"hash/crc64"
 	"net/url"
 	"runtime"
 	"strings"
@@ -134,4 +136,13 @@ func StringToBytes(s string) (b []byte) {
 	bh.len = sh.len
 	bh.cap = sh.len
 	return b
+}
+
+// DigestID 归一化 id 为 uint64
+func DigestID(id string) uint64 {
+	b, err := hex.DecodeString(id)
+	if err != nil || len(b) < 8 {
+		return 0
+	}
+	return crc64.Checksum(b, crc64.MakeTable(crc64.ECMA))
 }

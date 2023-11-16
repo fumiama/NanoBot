@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -282,4 +283,25 @@ func (ctx *Ctx) Block() {
 // Block 在 pre, rules, mid 阶段阻止后续触发
 func (ctx *Ctx) Break() {
 	ctx.ma.Break = true
+}
+
+// SenderID 唯一的发送者 ID
+func (ctx *Ctx) SenderID() uint64 {
+	grp := uint64(0)
+	if ctx.IsQQ {
+		if OnlyQQGroup(ctx) {
+			grp = DigestID(ctx.Message.ChannelID)
+		} else if OnlyQQPrivate(ctx) {
+			grp = DigestID(ctx.Message.Author.ID)
+		} else {
+			return 0
+		}
+	} else {
+		var err error
+		grp, err = strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
+		if err != nil {
+			return 0
+		}
+	}
+	return grp
 }
