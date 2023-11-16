@@ -204,7 +204,9 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (repl
 			Type: FileTypeImage,
 			URL:  file,
 		}
-		_, _ = ctx.SendPlainMessage(replytosender, caption...)
+		if len(caption) > 0 {
+			_, _ = ctx.SendPlainMessage(replytosender, caption...)
+		}
 		if OnlyQQGroup(ctx) {
 			reply, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
 		} else if OnlyQQPrivate(ctx) {
