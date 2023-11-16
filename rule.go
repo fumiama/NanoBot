@@ -106,6 +106,9 @@ func init() {
 			"启用", "enable", "禁用", "disable",
 		}, UserOrGrpAdmin).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
 			grp := ctx.SenderID()
+			if grp == 0 {
+				return
+			}
 			if !m.CanResponse(int64(grp)) {
 				return
 			}
@@ -154,6 +157,9 @@ func init() {
 
 		OnMessageCommandGroup([]string{"还原", "reset"}, UserOrGrpAdmin).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
 			grp := ctx.SenderID()
+			if grp == 0 {
+				return
+			}
 			if !m.CanResponse(int64(grp)) {
 				return
 			}
@@ -172,6 +178,9 @@ func init() {
 			"禁止", "ban", "允许", "permit",
 		}, AdminPermission).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
 			grp := ctx.SenderID()
+			if grp == 0 {
+				return
+			}
 			if !m.CanResponse(int64(grp)) {
 				return
 			}
@@ -184,7 +193,6 @@ func init() {
 					_, _ = ctx.SendPlainMessage(false, "没有找到指定服务!")
 					return
 				}
-				grp := ctx.SenderID()
 				msg := "*" + args[0] + "报告*"
 				issu := SuperUserPermission(ctx)
 				if strings.Contains(model.Command, "允许") || strings.Contains(model.Command, "permit") {
@@ -319,6 +327,10 @@ func init() {
 
 		OnMessageCommandGroup([]string{"用法", "usage"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
+				grp := ctx.SenderID()
+				if grp == 0 {
+					return
+				}
 				model := extension.CommandModel{}
 				_ = ctx.Parse(&model)
 				service, ok := Lookup(model.Args)
@@ -327,7 +339,6 @@ func init() {
 					return
 				}
 				if service.Options.Help != "" {
-					grp := ctx.SenderID()
 					_, _ = ctx.SendPlainMessage(false, service.EnableMarkIn(int64(grp)), " ", service)
 				} else {
 					_, _ = ctx.SendPlainMessage(false, "该服务无帮助!")
@@ -337,6 +348,9 @@ func init() {
 		OnMessageCommandGroup([]string{"服务列表", "service_list"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
 				grp := ctx.SenderID()
+				if grp == 0 {
+					return
+				}
 				m.RLock()
 				msg := make([]any, 1, len(m.M)*4+1)
 				m.RUnlock()
@@ -351,6 +365,9 @@ func init() {
 		OnMessageCommandGroup([]string{"服务详情", "service_detail"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
 				grp := ctx.SenderID()
+				if grp == 0 {
+					return
+				}
 				m.RLock()
 				msgs := make([]any, 1, len(m.M)*7+1)
 				m.RUnlock()
