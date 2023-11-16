@@ -17,8 +17,11 @@ func newctrl(service string, o *ctrl.Options[*Ctx]) Rule {
 	return func(ctx *Ctx) bool {
 		ctx.State["manager"] = c
 		if ctx.Message != nil {
-			gid, _ := strconv.ParseUint(ctx.Message.ChannelID, 10, 64)
-			uid, _ := strconv.ParseUint(ctx.Message.Author.ID, 10, 64)
+			gid := ctx.GroupID()
+			uid := ctx.UserID()
+			if gid == 0 || uid == 0 {
+				return false
+			}
 			return c.Handler(int64(gid), int64(uid))
 		}
 		return false
@@ -41,7 +44,7 @@ func init() {
 		}, UserOrGrpAdmin).SetBlock(true).Limit(func(ctx *Ctx) *rate.Limiter {
 			return respLimiterManager.Load(ctx.Message.ChannelID)
 		}).secondPriority().Handle(func(ctx *Ctx) {
-			grp := ctx.SenderID()
+			grp := ctx.GroupID()
 			if grp == 0 {
 				return
 			}
@@ -105,7 +108,7 @@ func init() {
 		OnMessageCommandGroup([]string{
 			"启用", "enable", "禁用", "disable",
 		}, UserOrGrpAdmin).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
-			grp := ctx.SenderID()
+			grp := ctx.GroupID()
 			if grp == 0 {
 				return
 			}
@@ -156,7 +159,7 @@ func init() {
 		})
 
 		OnMessageCommandGroup([]string{"还原", "reset"}, UserOrGrpAdmin).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
-			grp := ctx.SenderID()
+			grp := ctx.GroupID()
 			if grp == 0 {
 				return
 			}
@@ -177,7 +180,7 @@ func init() {
 		OnMessageCommandGroup([]string{
 			"禁止", "ban", "允许", "permit",
 		}, AdminPermission).SetBlock(true).secondPriority().Handle(func(ctx *Ctx) {
-			grp := ctx.SenderID()
+			grp := ctx.GroupID()
 			if grp == 0 {
 				return
 			}
@@ -327,7 +330,7 @@ func init() {
 
 		OnMessageCommandGroup([]string{"用法", "usage"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
-				grp := ctx.SenderID()
+				grp := ctx.GroupID()
 				if grp == 0 {
 					return
 				}
@@ -347,7 +350,7 @@ func init() {
 
 		OnMessageCommandGroup([]string{"服务列表", "service_list"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
-				grp := ctx.SenderID()
+				grp := ctx.GroupID()
 				if grp == 0 {
 					return
 				}
@@ -364,7 +367,7 @@ func init() {
 
 		OnMessageCommandGroup([]string{"服务详情", "service_detail"}, UserOrGrpAdmin).SetBlock(true).secondPriority().
 			Handle(func(ctx *Ctx) {
-				grp := ctx.SenderID()
+				grp := ctx.GroupID()
 				if grp == 0 {
 					return
 				}

@@ -285,8 +285,8 @@ func (ctx *Ctx) Break() {
 	ctx.ma.Break = true
 }
 
-// SenderID 唯一的发送者 ID
-func (ctx *Ctx) SenderID() uint64 {
+// GroupID 唯一的发送者所属组 ID
+func (ctx *Ctx) GroupID() uint64 {
 	grp := uint64(0)
 	if ctx.IsQQ {
 		if OnlyQQGroup(ctx) {
@@ -303,5 +303,14 @@ func (ctx *Ctx) SenderID() uint64 {
 			return 0
 		}
 	}
+	return grp
+}
+
+// GroupID 唯一的发送者 ID
+func (ctx *Ctx) UserID() uint64 {
+	if ctx.IsQQ {
+		return DigestID(ctx.Message.Author.ID)
+	}
+	grp, _ := strconv.ParseUint(ctx.Message.Author.ID, 10, 64)
 	return grp
 }
