@@ -485,14 +485,14 @@ func (ctx *Ctx) GetMyGuilds(before, after string, limit int) (guilds []Guild, er
 // PostFileToQQUser 发送文件到 QQ 用户的 openid
 //
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html#%E5%8F%91%E9%80%81%E5%88%B0%E5%8D%95%E8%81%8A
-func (ctx *Ctx) PostFileToQQUser(id string, content *FilePost) (*IDTimestampMessageResult, error) {
+func (ctx *Ctx) PostFileToQQUser(id string, content *FilePost) (*Message, error) {
 	return ctx.caller.PostFileToQQUser(id, content)
 }
 
 // PostFileToQQGroup 发送文件到 QQ 群的 openid
 //
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html#%E5%8F%91%E9%80%81%E5%88%B0%E7%BE%A4%E8%81%8A
-func (ctx *Ctx) PostFileToQQGroup(id string, content *FilePost) (*IDTimestampMessageResult, error) {
+func (ctx *Ctx) PostFileToQQGroup(id string, content *FilePost) (*Message, error) {
 	return ctx.caller.PostFileToQQGroup(id, content)
 }
 
@@ -503,14 +503,14 @@ func (ctx *Ctx) PostFileToQQGroup(id string, content *FilePost) (*IDTimestampMes
 // PostMessageToQQUser 向 openid 指定的用户发送消息
 //
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/send.html#%E5%8D%95%E8%81%8A
-func (ctx *Ctx) PostMessageToQQUser(id string, content *MessagePostV2) (*IDTimestampMessageResult, error) {
+func (ctx *Ctx) PostMessageToQQUser(id string, content *MessagePost) (*Message, error) {
 	return ctx.caller.PostMessageToQQUser(id, content)
 }
 
 // PostMessageToQQGroup 向 openid 指定的群发送消息
 //
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/send.html#%E7%BE%A4%E8%81%8A
-func (ctx *Ctx) PostMessageToQQGroup(id string, content *MessagePostV2) (*IDTimestampMessageResult, error) {
+func (ctx *Ctx) PostMessageToQQGroup(id string, content *MessagePost) (*Message, error) {
 	return ctx.caller.PostMessageToQQGroup(id, content)
 }
 

@@ -55,15 +55,3 @@ func (bot *Bot) postOpenAPIofDMS(ep, contenttype string, body io.Reader) (*DMS, 
 	}
 	return &resp.DMS, err
 }
-
-func (bot *Bot) postOpenAPIofIDTimestampMessageResult(ep, contenttype string, body io.Reader) (*IDTimestampMessageResult, error) {
-	resp := &struct {
-		CodeMessageBase
-		IDTimestampMessageResult
-	}{}
-	err := bot.PostOpenAPI(ep, contenttype, resp, body)
-	if err != nil {
-		err = errors.Wrap(err, getCallerFuncName())
-	}
-	return &resp.IDTimestampMessageResult, err
-}

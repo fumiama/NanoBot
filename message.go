@@ -27,15 +27,15 @@ func GetTriggeredMessages(id string) []string {
 	return triggeredMessages.Get(id)
 }
 
-type MessageType int
+type MessageSegmentType int
 
 const (
-	MessageTypeText MessageType = iota
-	MessageTypeImage
-	MessageTypeImageBytes
-	MessageTypeReply
-	MessageTypeAudio
-	MessageTypeVideo
+	MessageSegmentTypeText MessageSegmentType = iota
+	MessageSegmentTypeImage
+	MessageSegmentTypeImageBytes
+	MessageSegmentTypeReply
+	MessageSegmentTypeAudio
+	MessageSegmentTypeVideo
 )
 
 // Message impl the array form of message
@@ -44,7 +44,7 @@ type Messages []MessageSegment
 // MessageSegment impl the single message
 // MessageSegment 消息数组
 type MessageSegment struct {
-	Type MessageType
+	Type MessageSegmentType
 	Data string
 }
 
@@ -56,7 +56,7 @@ func (m MessageSegment) String() string {
 // Text 纯文本
 func Text(text ...interface{}) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeText,
+		Type: MessageSegmentTypeText,
 		Data: HideURL(MessageEscape(fmt.Sprint(text...))),
 	}
 }
@@ -65,7 +65,7 @@ func Text(text ...interface{}) MessageSegment {
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F
 func Face(id int) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeText,
+		Type: MessageSegmentTypeText,
 		Data: "<emoji:" + strconv.Itoa(id) + ">",
 	}
 }
@@ -73,7 +73,7 @@ func Face(id int) MessageSegment {
 // Image 普通图片
 func Image(file string) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeImage,
+		Type: MessageSegmentTypeImage,
 		Data: file,
 	}
 }
@@ -81,7 +81,7 @@ func Image(file string) MessageSegment {
 // ImageBytes 普通图片
 func ImageBytes(data []byte) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeImageBytes,
+		Type: MessageSegmentTypeImageBytes,
 		Data: BytesToString(data),
 	}
 }
@@ -93,7 +93,7 @@ func At(id string) MessageSegment {
 		return AtAll()
 	}
 	return MessageSegment{
-		Type: MessageTypeText,
+		Type: MessageSegmentTypeText,
 		Data: "<@!" + id + ">",
 	}
 }
@@ -102,7 +102,7 @@ func At(id string) MessageSegment {
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F
 func AtAll() MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeText,
+		Type: MessageSegmentTypeText,
 		Data: "@everyone",
 	}
 }
@@ -111,7 +111,7 @@ func AtAll() MessageSegment {
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/message_format.html#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F
 func AtChannel(id string) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeText,
+		Type: MessageSegmentTypeText,
 		Data: "<#channel_id>",
 	}
 }
@@ -120,7 +120,7 @@ func AtChannel(id string) MessageSegment {
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html
 func Record(url string) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeAudio,
+		Type: MessageSegmentTypeAudio,
 		Data: url,
 	}
 }
@@ -129,7 +129,7 @@ func Record(url string) MessageSegment {
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html
 func Video(url string) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeVideo,
+		Type: MessageSegmentTypeVideo,
 		Data: url,
 	}
 }
@@ -138,7 +138,7 @@ func Video(url string) MessageSegment {
 // https://github.com/botuniverse/onebot-11/tree/master/message/segment.md#%E5%9B%9E%E5%A4%8D
 func ReplyTo(id string) MessageSegment {
 	return MessageSegment{
-		Type: MessageTypeReply,
+		Type: MessageSegmentTypeReply,
 		Data: id,
 	}
 }

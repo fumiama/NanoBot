@@ -70,8 +70,8 @@ type Handler struct {
 	OnAudioOrLiveChannelMemberExit  func(s uint32, bot *Bot, d *AudioLiveChannelUsersChange)
 	// QQ (1<<25) QQ 的一堆事件
 
-	OnC2cMessageCreate     func(s uint32, bot *Bot, d *MessageV2)
-	OnGroupAtMessageCreate func(s uint32, bot *Bot, d *MessageV2)
+	OnC2cMessageCreate     func(s uint32, bot *Bot, d *Message)
+	OnGroupAtMessageCreate func(s uint32, bot *Bot, d *Message)
 	OnGroupAddRobot        func(s uint32, bot *Bot, d *QQRobotStatus)
 	OnGroupDelRobot        func(s uint32, bot *Bot, d *QQRobotStatus)
 	OnGroupMsgReject       func(s uint32, bot *Bot, d *QQRobotStatus)

@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strings"
 	"sync"
-	"time"
 )
 
 //go:generate go run codegen/context/main.go
@@ -86,9 +85,9 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 	var reply *Message
 	for _, msg := range messages {
 		switch msg.Type {
-		case MessageTypeText:
+		case MessageSegmentTypeText:
 			textlist = append(textlist, msg.Data)
-		case MessageTypeImage:
+		case MessageSegmentTypeImage:
 			reply, err = ctx.SendImage(msg.Data, isnextreply, textlist...)
 			if isnextreply {
 				isnextreply = false
@@ -98,7 +97,7 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 			if err != nil {
 				return
 			}
-		case MessageTypeImageBytes:
+		case MessageSegmentTypeImageBytes:
 			if ctx.IsQQ {
 				continue
 			}
@@ -111,30 +110,29 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 			if err != nil {
 				return
 			}
-		case MessageTypeReply:
+		case MessageSegmentTypeReply:
 			isnextreply = true
-		case MessageTypeAudio, MessageTypeVideo:
+		case MessageSegmentTypeAudio, MessageSegmentTypeVideo:
 			if !ctx.IsQQ {
 				continue
 			}
 			fp := &FilePost{
 				URL: msg.Data,
 			}
-			if msg.Type == MessageTypeAudio {
+			if msg.Type == MessageSegmentTypeAudio {
 				fp.Type = FileTypeAudio
-			} else if msg.Type == MessageTypeVideo {
+			} else if msg.Type == MessageSegmentTypeVideo {
 				fp.Type = FileTypeVideo
 			}
-			var idts *IDTimestampMessageResult
 			if OnlyQQGroup(ctx) {
-				idts, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
+				reply, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
 			} else if OnlyQQPrivate(ctx) {
-				idts, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
+				reply, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
 			}
+			m = append(m, reply)
 			if err != nil {
 				return
 			}
-			reply = &Message{ID: idts.ID, Timestamp: time.Unix(int64(idts.Timestamp), 0)}
 		}
 	}
 	if len(textlist) > 0 {
@@ -168,35 +166,21 @@ func (ctx *Ctx) Post(replytosender bool, post *MessagePost) (reply *Message, err
 	} else if OnlyChannel(ctx) {
 		reply, err = ctx.PostMessageToChannel(msg.ChannelID, post)
 	} else { // v2
-		var idts *IDTimestampMessageResult
-		typ := MessageTypeV2Text
 		switch {
 		case post.Markdown != nil:
-			typ = MessageTypeV2Markdown
+			post.Type = MessageTypeMarkdown
 		case post.Ark != nil:
-			typ = MessageTypeV2Ark
+			post.Type = MessageTypeArk
 		case post.Embed != nil:
-			typ = MessageTypeV2Embed
+			post.Type = MessageTypeEmbed
+		default:
+			post.Type = MessageTypeText
 		}
-		v2post := &MessagePostV2{
-			Type:             typ,
-			Seq:              len(GetTriggeredMessages(msg.ID)) + 1,
-			Content:          post.Content,
-			ReplyMessageID:   post.ReplyMessageID,
-			MessageReference: post.MessageReference,
-			Markdown:         post.Markdown,
-			KeyBoard:         post.KeyBoard,
-			Ark:              post.Ark,
-			Embed:            post.Embed,
-		}
+		post.Seq = len(GetTriggeredMessages(msg.ID)) + 1
 		if OnlyQQGroup(ctx) {
-			idts, err = ctx.PostMessageToQQGroup(msg.ChannelID, v2post)
+			reply, err = ctx.PostMessageToQQGroup(msg.ChannelID, post)
 		} else if OnlyQQPrivate(ctx) {
-			idts, err = ctx.PostMessageToQQUser(msg.ChannelID, v2post)
-		}
-		reply = &Message{
-			ID:        idts.ID,
-			Timestamp: time.Unix(int64(idts.Timestamp), 0),
+			reply, err = ctx.PostMessageToQQUser(msg.ChannelID, post)
 		}
 	}
 	if err != nil && msg != nil && reply != nil && reply.ID != "" {
@@ -213,24 +197,19 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 }
 
 // SendImage 发送带图片消息到对方
-func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (*Message, error) {
+func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (reply *Message, err error) {
 	if OnlyQQ(ctx) {
-		var idts *IDTimestampMessageResult
-		var err error
 		fp := &FilePost{
 			Type: FileTypeImage,
 			URL:  file,
 		}
 		_, _ = ctx.SendPlainMessage(replytosender, caption...)
 		if OnlyQQGroup(ctx) {
-			idts, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
+			reply, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
 		} else if OnlyQQPrivate(ctx) {
-			idts, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
+			reply, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
 		}
-		if err != nil {
-			return nil, err
-		}
-		return &Message{ID: idts.ID, Timestamp: time.Unix(int64(idts.Timestamp), 0)}, nil
+		return
 	}
 
 	post := &MessagePost{

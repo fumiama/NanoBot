@@ -82,27 +82,15 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 	ctx.value = x
 	switch tp {
 	case "Message":
+		ctx.Message = (*Message)(x.UnsafePointer())
+		if ctx.Message.MentionEveryone {
+			ctx.IsToMe = true
+		}
 		if ctx.IsQQ {
-			msgv2 := (*MessageV2)(x.UnsafePointer())
-			ctx.Message = &Message{
-				ID:          msgv2.ID,
-				Content:     msgv2.Content,
-				ChannelID:   msgv2.GroupOpenID,
-				GuildID:     payload.T,
-				Timestamp:   msgv2.Timestamp,
-				Attachments: msgv2.Attachments,
-				Author:      &User{},
-			}
-			if msgv2.Author.UserOpenID != "" {
-				ctx.Message.Author.ID = msgv2.Author.UserOpenID
-			} else if msgv2.Author.MemberOpenID != "" {
-				ctx.Message.Author.ID = msgv2.Author.MemberOpenID
-			}
-			ctx.Value = ctx.Message
-		} else {
-			ctx.Message = (*Message)(x.UnsafePointer())
-			if ctx.Message.MentionEveryone {
-				ctx.IsToMe = true
+			if ctx.Message.Author.UserOpenID != "" {
+				ctx.Message.Author.ID = ctx.Message.Author.UserOpenID
+			} else if ctx.Message.Author.MemberOpenID != "" {
+				ctx.Message.Author.ID = ctx.Message.Author.MemberOpenID
 			}
 		}
 		log.Infoln(getLogHeader(), "=>", ctx.Message)

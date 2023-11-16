@@ -10,6 +10,8 @@ type User struct {
 	Bot              bool   `json:"bot"`
 	UnionOpenid      string `json:"union_openid"`
 	UnionUserAccount string `json:"union_user_account"`
+	UserOpenID       string `json:"user_openid"`
+	MemberOpenID     string `json:"member_openid"`
 }
 
 // At 返回 <@!u.ID>

@@ -22,6 +22,7 @@ type Message struct {
 	ID               string              `json:"id"`
 	ChannelID        string              `json:"channel_id"`
 	GuildID          string              `json:"guild_id"`
+	GroupOpenID      string              `json:"group_openid"`
 	Content          string              `json:"content"`
 	Timestamp        time.Time           `json:"timestamp"`
 	EditedTimestamp  time.Time           `json:"edited_timestamp"`
@@ -224,6 +225,9 @@ func (bot *Bot) GetMessageFromChannel(messageid, channelid string) (*Message, er
 //
 // https://bot.q.qq.com/wiki/develop/api/openapi/message/post_messages.html#%E9%80%9A%E7%94%A8%E5%8F%82%E6%95%B0
 type MessagePost struct {
+	// https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/send.html
+	Type             MessageType       `json:"msg_type"`
+	Seq              int               `json:"msg_seq,omitempty"` // 回复消息的序号，与 msg_id 联合使用，避免相同消息id回复重复发送，不填默认是1。相同的 msg_id + msg_seq 重复发送会失败。
 	Content          string            `json:"content,omitempty"`
 	Embed            *MessageEmbed     `json:"embed,omitempty"` // https://bot.q.qq.com/wiki/develop/api/openapi/message/template/embed_message.html
 	Ark              *MessageArk       `json:"ark,omitempty"`   // https://bot.q.qq.com/wiki/develop/api/openapi/message/message_template.html
@@ -239,6 +243,13 @@ type MessagePost struct {
 
 func (mp *MessagePost) String() string {
 	sb := strings.Builder{}
+	if mp.Seq > 0 {
+		sb.WriteString("[v2:")
+		sb.WriteString(mp.Type.String())
+		sb.WriteString("#")
+		sb.WriteString(strconv.Itoa(mp.Seq))
+		sb.WriteString("]")
+	}
 	if mp.Content == "" {
 		sb.WriteString("无文本")
 	} else {
