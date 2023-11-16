@@ -92,6 +92,7 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 			} else if ctx.Message.Author.MemberOpenID != "" {
 				ctx.Message.Author.ID = ctx.Message.Author.MemberOpenID
 			}
+			ctx.Message.ChannelID = ctx.Message.GroupOpenID
 		}
 		log.Infoln(getLogHeader(), "=>", ctx.Message)
 	case "MessageDelete":
