@@ -9,7 +9,7 @@ require (
 	github.com/RomiChan/syncx v0.0.0-20221202055724-5f842c53020e
 	github.com/RomiChan/websocket v1.4.3-0.20220227141055-9b2c6168c9c5
 	github.com/fumiama/go-base16384 v1.7.0
-	github.com/fumiama/imoto v0.1.1
+	github.com/fumiama/imoto v0.1.2
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.1
