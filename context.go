@@ -1,12 +1,17 @@
 package nano
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+
+	base14 "github.com/fumiama/go-base16384"
+	"github.com/fumiama/imoto"
 )
 
 //go:generate go run codegen/context/main.go
@@ -79,6 +84,8 @@ func (ctx *Ctx) CheckSession() Rule {
 	}
 }
 
+var imotoken = "f7f06a63b8c111df0d4faa256cd5ba35cb98678ee8274923576d0416b52fe768"
+
 // Send 发送一批消息
 func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 	isnextreply := false
@@ -99,9 +106,6 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 				return
 			}
 		case MessageSegmentTypeImageBytes:
-			if ctx.IsQQ {
-				continue
-			}
 			reply, err = ctx.SendImageBytes(StringToBytes(msg.Data), isnextreply, textlist...)
 			if isnextreply {
 				isnextreply = false
@@ -200,6 +204,27 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 // SendImage 发送带图片消息到对方
 func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (reply *Message, err error) {
 	if OnlyQQ(ctx) {
+		if strings.HasPrefix(file, "file:///") {
+			data, err := os.ReadFile(file[8:])
+			if err != nil {
+				return nil, err
+			}
+			return ctx.SendImageBytes(data, replytosender, caption...)
+		}
+		if strings.HasPrefix(file, "base64://") {
+			data, err := base64.StdEncoding.DecodeString(file[9:])
+			if err != nil {
+				return nil, err
+			}
+			return ctx.SendImageBytes(data, replytosender, caption...)
+		}
+		if strings.HasPrefix(file, "base16384://") {
+			data := base14.DecodeFromString(file[12:])
+			if len(data) == 0 {
+				return nil, errors.New("invalid base16384 image")
+			}
+			return ctx.SendImageBytes(data, replytosender, caption...)
+		}
 		fp := &FilePost{
 			Type: FileTypeImage,
 			URL:  file,
@@ -231,7 +256,21 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (repl
 // SendImageBytes 发送带图片消息到对方
 func (ctx *Ctx) SendImageBytes(data []byte, replytosender bool, caption ...any) (*Message, error) {
 	if OnlyQQ(ctx) {
-		return nil, errors.New("QQ暂不支持直接发送图片数据")
+		file, _, _, err := imoto.Bed(imotoken, data)
+		if err != nil {
+			return nil, err
+		}
+		fp := &FilePost{
+			Type: FileTypeImage,
+			URL:  file,
+		}
+		if len(caption) > 0 {
+			_, _ = ctx.SendPlainMessage(replytosender, caption...)
+		}
+		if OnlyQQGroup(ctx) {
+			return ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
+		}
+		return ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
 	}
 
 	post := &MessagePost{
