@@ -115,6 +115,7 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 
 func match(ctx *Ctx, matchers []*Matcher) {
 	if ctx.Message != nil && ctx.Message.Content != "" { // 确保无空
+		ctx.Message.Content = strings.TrimSpace(ctx.Message.Content)
 		if !ctx.IsToMe {
 			ctx.IsToMe = func(ctx *Ctx) bool {
 				name := ctx.GetReady().User.Username
