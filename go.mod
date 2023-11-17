@@ -9,7 +9,7 @@ require (
 	github.com/RomiChan/syncx v0.0.0-20221202055724-5f842c53020e
 	github.com/RomiChan/websocket v1.4.3-0.20220227141055-9b2c6168c9c5
 	github.com/fumiama/go-base16384 v1.7.0
-	github.com/fumiama/imoto v0.1.2
+	github.com/fumiama/imoto v0.1.3
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.1
@@ -24,6 +24,7 @@ require (
 	github.com/fumiama/go-registry v0.2.6 // indirect
 	github.com/fumiama/go-simple-protobuf v0.1.0 // indirect
 	github.com/fumiama/gofastTEA v0.0.10 // indirect
+	github.com/fumiama/imgsz v0.0.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
