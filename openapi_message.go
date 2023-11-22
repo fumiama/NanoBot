@@ -1,6 +1,7 @@
 package nano
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"reflect"
 	"strconv"
@@ -309,7 +310,12 @@ func (mp *MessagePost) String() string {
 	}
 	if mp.Media != nil {
 		sb.WriteString(", 富媒体: ")
-		sb.WriteString(mp.Media.FileInfo)
+		data, err := base64.StdEncoding.DecodeString(mp.Media.FileInfo)
+		if err == nil {
+			sb.Write(data)
+		} else {
+			sb.WriteString(mp.Media.FileInfo)
+		}
 	}
 	return sb.String()
 }
