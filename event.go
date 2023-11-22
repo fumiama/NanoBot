@@ -51,10 +51,10 @@ func (bot *Bot) processEvent(payload *WebsocketPayload) {
 		ctx.IsQQ = true
 	}
 	switch tp {
-	case "DirectMessageCreate", "C2cMessageCreate":
+	case "DirectMessageCreate", "C2cMessageCreate", "GroupAtMessageCreate":
 		ctx.IsToMe = true
 		fallthrough
-	case "MessageCreate", "AtMessageCreate", "GroupAtMessageCreate":
+	case "MessageCreate", "AtMessageCreate":
 		tp = "Message"
 	case "DirectMessageDelete":
 		ctx.IsToMe = true
