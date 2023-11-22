@@ -14,6 +14,9 @@ const (
 	MessageTypeMarkdown
 	MessageTypeArk
 	MessageTypeEmbed
+	MessageTypeUnk1
+	MessageTypeUnk2
+	MessageTypeMedia
 )
 
 func (mt2 MessageType) String() string {

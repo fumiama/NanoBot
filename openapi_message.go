@@ -23,9 +23,12 @@ type Message struct {
 	ChannelID        string              `json:"channel_id"`
 	GuildID          string              `json:"guild_id"`
 	GroupOpenID      string              `json:"group_openid"`
+	FileUUID         string              `json:"file_uuid"`
+	FileInfo         string              `json:"file_info"`
 	Content          string              `json:"content"`
 	Timestamp        time.Time           `json:"timestamp"`
 	EditedTimestamp  time.Time           `json:"edited_timestamp"`
+	FileInfoTTL      int                 `json:"ttl"`
 	MentionEveryone  bool                `json:"mention_everyone"`
 	Author           *User               `json:"author"`
 	Attachments      []MessageAttachment `json:"attachments"`
@@ -239,6 +242,7 @@ type MessagePost struct {
 	ReplyEventID     string            `json:"event_id,omitempty"`
 	Markdown         *MessageMarkdown  `json:"markdown,omitempty"`
 	KeyBoard         *MessageKeyboard  `json:"keyboard,omitempty"`
+	Media            *MessageMedia     `json:"media,omitempty"`
 }
 
 func (mp *MessagePost) String() string {
@@ -302,6 +306,10 @@ func (mp *MessagePost) String() string {
 	if mp.KeyBoard != nil {
 		sb.WriteString(", KB模版: ")
 		sb.WriteString(mp.KeyBoard.ID)
+	}
+	if mp.Media != nil {
+		sb.WriteString(", 富媒体: ")
+		sb.WriteString(mp.Media.FileInfo)
 	}
 	return sb.String()
 }

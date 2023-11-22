@@ -36,9 +36,9 @@ func (ft FileType) String() string {
 //
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html
 type FilePost struct {
-	Type                    FileType `json:"file_type"`
-	URL                     string   `json:"url"`
-	MotherFuckingAlwaysTrue bool     `json:"srv_send_msg"`
+	Type       FileType `json:"file_type"`
+	URL        string   `json:"url"`
+	IsPositive bool     `json:"srv_send_msg"` // IsPositive
 	// file_data		否	【暂未支持】
 }
 
@@ -61,7 +61,6 @@ func (fp *FilePost) String() string {
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html#%E5%8F%91%E9%80%81%E5%88%B0%E5%8D%95%E8%81%8A
 func (bot *Bot) PostFileToQQUser(id string, content *FilePost) (*Message, error) {
 	logrus.Infoln(getLogHeader(), "<= [Q]单:", id+",", content)
-	content.MotherFuckingAlwaysTrue = true
 	return bot.postOpenAPIofMessage("/v2/users/"+id+"/files", "", WriteBodyFromJSON(content))
 }
 
@@ -70,6 +69,10 @@ func (bot *Bot) PostFileToQQUser(id string, content *FilePost) (*Message, error)
 // https://bot.q.qq.com/wiki/develop/api-231017/server-inter/message/send-receive/rich-text-media.html#%E5%8F%91%E9%80%81%E5%88%B0%E7%BE%A4%E8%81%8A
 func (bot *Bot) PostFileToQQGroup(id string, content *FilePost) (*Message, error) {
 	logrus.Infoln(getLogHeader(), "<= [Q]群:", id+",", content)
-	content.MotherFuckingAlwaysTrue = true
 	return bot.postOpenAPIofMessage("/v2/groups/"+id+"/files", "", WriteBodyFromJSON(content))
+}
+
+// MessageMedia used in MessagePost
+type MessageMedia struct {
+	FileInfo string `json:"file_info"`
 }

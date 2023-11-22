@@ -134,6 +134,14 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 			} else if OnlyQQPrivate(ctx) {
 				reply, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
 			}
+			if err != nil {
+				return
+			}
+			reply, err = ctx.Post(isnextreply, &MessagePost{
+				Type:    MessageTypeMedia,
+				Content: " ",
+				Media:   &MessageMedia{FileInfo: reply.FileInfo},
+			})
 			m = append(m, reply)
 			if err != nil {
 				return
@@ -203,6 +211,10 @@ func (ctx *Ctx) SendPlainMessage(replytosender bool, printable ...any) (*Message
 
 // SendImage 发送带图片消息到对方
 func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (reply *Message, err error) {
+	post := &MessagePost{
+		Content: HideURL(fmt.Sprint(caption...)),
+	}
+
 	if OnlyQQ(ctx) {
 		if strings.HasPrefix(file, "file:///") {
 			data, err := os.ReadFile(file[8:])
@@ -229,25 +241,27 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (repl
 			Type: FileTypeImage,
 			URL:  file,
 		}
-		if len(caption) > 0 {
+		/*if len(caption) > 0 {
 			_, _ = ctx.SendPlainMessage(replytosender, caption...)
+		}*/
+		if post.Content == "" {
+			post.Content = " "
 		}
 		if OnlyQQGroup(ctx) {
 			reply, err = ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
 		} else if OnlyQQPrivate(ctx) {
 			reply, err = ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
 		}
-		return
-	}
-
-	post := &MessagePost{
-		Content: HideURL(fmt.Sprint(caption...)),
-	}
-
-	if strings.HasPrefix(file, "http") {
-		post.Image = file
+		if err != nil {
+			return
+		}
+		post.Media = &MessageMedia{FileInfo: reply.FileInfo}
 	} else {
-		post.ImageFile = file
+		if strings.HasPrefix(file, "http") {
+			post.Image = file
+		} else {
+			post.ImageFile = file
+		}
 	}
 
 	return ctx.Post(replytosender, post)
@@ -260,17 +274,7 @@ func (ctx *Ctx) SendImageBytes(data []byte, replytosender bool, caption ...any) 
 		if err != nil {
 			return nil, err
 		}
-		fp := &FilePost{
-			Type: FileTypeImage,
-			URL:  file,
-		}
-		if len(caption) > 0 {
-			_, _ = ctx.SendPlainMessage(replytosender, caption...)
-		}
-		if OnlyQQGroup(ctx) {
-			return ctx.PostFileToQQGroup(ctx.Message.ChannelID, fp)
-		}
-		return ctx.PostFileToQQUser(ctx.Message.Author.ID, fp)
+		return ctx.SendImage(file, replytosender, caption...)
 	}
 
 	post := &MessagePost{
