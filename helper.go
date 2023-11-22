@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"hash/crc64"
 	"net/url"
+	"regexp"
 	"runtime"
 	"strings"
 	"unsafe"
@@ -145,4 +146,20 @@ func DigestID(id string) uint64 {
 		return 0
 	}
 	return crc64.Checksum(b, crc64.MakeTable(crc64.ECMA))
+}
+
+const mediafilebed = `https://multimedia.nt.qq.com.cn`
+
+var mediafileinfourlre = regexp.MustCompile(`/download\?appid=\d+&fileid=[0-9A-Za-z-_]+&rkey=[0-9A-Za-z-_]+`)
+
+// mediaURL 从 fileinfo 得到 URL
+func mediaURL(fileinfo string) (string, error) {
+	sb := strings.Builder{}
+	data, err := base64.StdEncoding.DecodeString(fileinfo)
+	if err != nil {
+		return "", err
+	}
+	sb.WriteString(mediafilebed)
+	sb.Write(mediafileinfourlre.Find(data))
+	return sb.String(), nil
 }

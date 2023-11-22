@@ -1,7 +1,6 @@
 package nano
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"reflect"
 	"strconv"
@@ -27,8 +26,8 @@ type Message struct {
 	FileUUID         string              `json:"file_uuid"`
 	FileInfo         string              `json:"file_info"`
 	Content          string              `json:"content"`
-	Timestamp        time.Time           `json:"timestamp"`
-	EditedTimestamp  time.Time           `json:"edited_timestamp"`
+	Timestamp        *time.Time          `json:"timestamp"`
+	EditedTimestamp  *time.Time          `json:"edited_timestamp"`
 	FileInfoTTL      int                 `json:"ttl"`
 	MentionEveryone  bool                `json:"mention_everyone"`
 	Author           *User               `json:"author"`
@@ -47,6 +46,27 @@ type Message struct {
 // "=> ｷﾞﾙﾄﾞ:", ctx.Message.GuildID+", 频道:", ctx.Message.ChannelID+", 用户:", ctx.Message.Author.Username+"("+ctx.Message.Author.ID+"), 内容:", ctx.Message.Content
 func (m *Message) String() string {
 	sb := strings.Builder{}
+	if m.Timestamp != nil {
+		sb.WriteString(m.Timestamp.Format(time.DateTime))
+	}
+	if m.FileUUID != "" {
+		sb.WriteString("富媒体: ")
+		sb.WriteString(m.FileUUID)
+		sb.WriteString(", 有效期: ")
+		if m.FileInfoTTL == 0 {
+			sb.WriteString("长期")
+		} else {
+			sb.WriteString(strconv.Itoa(m.FileInfoTTL))
+			sb.WriteByte('s')
+		}
+		u, err := mediaURL(m.FileInfo)
+		if err == nil {
+			sb.WriteString(", URL: ")
+			sb.WriteString(u)
+		}
+		sb.WriteString(", URL: ")
+		return sb.String()
+	}
 	if m.SeqInChannel != "" {
 		sb.WriteByte('[')
 		sb.WriteString(m.SeqInChannel)
@@ -310,9 +330,9 @@ func (mp *MessagePost) String() string {
 	}
 	if mp.Media != nil {
 		sb.WriteString(", 富媒体: ")
-		data, err := base64.StdEncoding.DecodeString(mp.Media.FileInfo)
+		u, err := mediaURL(mp.Media.FileInfo)
 		if err == nil {
-			sb.Write(data)
+			sb.WriteString(u)
 		} else {
 			sb.WriteString(mp.Media.FileInfo)
 		}
@@ -354,7 +374,12 @@ func (bot *Bot) postMessageTo(ep string, content *MessagePost) (*Message, error)
 	if err != nil {
 		return nil, errors.Wrap(err, getThisFuncName())
 	}
-	return bot.postOpenAPIofMessage(ep, contenttype, body)
+	m, err := bot.postOpenAPIofMessage(ep, contenttype, body)
+	if err != nil {
+		return nil, errors.Wrap(err, getThisFuncName())
+	}
+	logrus.Infoln(getLogHeader(), "=> 消息结果:", m)
+	return m, nil
 }
 
 // PostMessageToChannel 向 channel_id 指定的子频道发送消息
