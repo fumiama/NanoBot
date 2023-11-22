@@ -313,7 +313,7 @@ func OnlyChannel(ctx *Ctx) bool {
 // OnlyPublic 消息类型包含 At 或 Public (包括QQ群)
 func OnlyPublic(ctx *Ctx) bool {
 	if ctx.Type != "" {
-		return strings.HasPrefix(ctx.Type, "At") || strings.HasPrefix(ctx.Type, "Public")
+		return strings.HasPrefix(ctx.Type, "At") || strings.HasPrefix(ctx.Type, "Public") || strings.HasPrefix(ctx.Type, "GroupAt")
 	}
 	return false
 }
@@ -341,7 +341,7 @@ func SuperUserPermission(ctx *Ctx) bool {
 			return false
 		}
 		for _, su := range ctx.caller.SuperUsers {
-			if su == msg.Author.ID {
+			if su == msg.Author.ID || (ctx.IsQQ && su == SuperUserAllQQUsers) {
 				return true
 			}
 		}

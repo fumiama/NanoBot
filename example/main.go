@@ -17,7 +17,7 @@ func main() {
 	nano.Run(nil, &nano.Bot{
 		AppID:      "你的AppID",
 		Token:      "你的Token",
-		Secret:     "你的Secret, 目前没用到, 可以不填",
+		Secret:     "你的Secret, 可以不填 (QQ群Bot必须填写)",
 		Intents:    nano.IntentGuildPublic,
 		SuperUsers: []string{"用户ID1", "用户ID2"},
 	})

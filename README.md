@@ -3,7 +3,7 @@
   <br>
 
   <h1>NanoBot</h1>
-  类 ZeroBot 的官方 QQ 频道适配器<br><br>
+  类ZeroBot的官方QQ频道/群聊全域机器人框架, 简单易用<br><br>
 
   <img src="https://counter.seku.su/cmoe?name=NanoBot&theme=r34" /><br>
 
@@ -54,7 +54,7 @@ func main() {
 	nano.Run(nil, &nano.Bot{
 		AppID:      "你的AppID",
 		Token:      "你的Token",
-		Secret:     "你的Secret, 目前没用到, 可以不填",
+		Secret:     "你的Secret, 可以不填 (QQ群Bot必须填写)",
 		Intents:    nano.IntentPublic,
 		SuperUsers: []string{"用户ID1", "用户ID2"},
 	})
@@ -83,7 +83,7 @@ func main() {
 	nano.Run(nil, &nano.Bot{
 		AppID:   "你的AppID",
 		Token:   "你的Token",
-		Secret:  "你的Secret, 目前没用到, 可以不填",
+		Secret:  "你的Secret, 可以不填 (QQ群Bot必须填写)",
 		Intents: nano.IntentPublic,
 		Handler: &nano.Handler{
 			OnAtMessageCreate: func(s uint32, bot *nano.Bot, d *nano.Message) {

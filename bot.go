@@ -23,13 +23,18 @@ var (
 	isrunning uintptr
 )
 
+const (
+	// SuperUserAllQQUsers 使所有 QQ 用户成为超级用户
+	SuperUserAllQQUsers = "AllQQUsers"
+)
+
 // Bot 一个机器人实例的配置
 type Bot struct {
 	AppID      string          `yaml:"AppID"` // AppID is BotAppID（开发者ID）
 	Token      string          `yaml:"Token"` // Token is 机器人令牌 有 Secret 则使用新版 API
 	token      string          // token 是通过 secret 获得的残血 token
 	Secret     string          `yaml:"Secret"`     // Secret is 机器人令牌 V2 (AppSecret/ClientSecret) 沙盒目前虽然能登录但无法收发消息
-	SuperUsers []string        `yaml:"SuperUsers"` // SuperUsers 超级用户
+	SuperUsers []string        `yaml:"SuperUsers"` // SuperUsers 超级用户, 特殊: AllQQUsers 将使所有 QQ 用户成为超级用户
 	Timeout    time.Duration   `yaml:"Timeout"`    // Timeout is API 调用超时
 	Handler    *Handler        `yaml:"-"`          // Handler 注册对各种事件的处理
 	Intents    uint32          `yaml:"Intents"`    // Intents 欲接收的事件
