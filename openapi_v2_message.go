@@ -31,6 +31,8 @@ func (mt2 MessageType) String() string {
 		return "模版"
 	case MessageTypeEmbed:
 		return "嵌入"
+	case MessageTypeMedia:
+		return "富媒体"
 	default:
 		return "未知类型" + strconv.Itoa(int(mt2))
 	}
