@@ -138,7 +138,6 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 				return
 			}
 			reply, err = ctx.Post(isnextreply, &MessagePost{
-				Type:    MessageTypeMedia,
 				Content: " ",
 				Media:   &MessageMedia{FileInfo: reply.FileInfo},
 			})
@@ -186,6 +185,8 @@ func (ctx *Ctx) Post(replytosender bool, post *MessagePost) (reply *Message, err
 			post.Type = MessageTypeArk
 		case post.Embed != nil:
 			post.Type = MessageTypeEmbed
+		case post.Media != nil:
+			post.Type = MessageTypeMedia
 		default:
 			post.Type = MessageTypeText
 		}
