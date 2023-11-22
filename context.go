@@ -196,8 +196,12 @@ func (ctx *Ctx) Post(replytosender bool, post *MessagePost) (reply *Message, err
 		} else if OnlyQQPrivate(ctx) {
 			reply, err = ctx.PostMessageToQQUser(msg.ChannelID, post)
 		}
+		if err == nil {
+			logtriggeredmessages(msg.ID, "") // only to log message seq
+		}
+		return
 	}
-	if err != nil && msg != nil && reply != nil && reply.ID != "" {
+	if err == nil && msg != nil && reply != nil && reply.ID != "" {
 		logtriggeredmessages(msg.ID, reply.ID)
 	}
 	return
