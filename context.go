@@ -12,6 +12,7 @@ import (
 
 	base14 "github.com/fumiama/go-base16384"
 	"github.com/fumiama/imoto"
+	"github.com/sirupsen/logrus"
 )
 
 //go:generate go run codegen/context/main.go
@@ -137,6 +138,7 @@ func (ctx *Ctx) Send(messages Messages) (m []*Message, err error) {
 			if err != nil {
 				return
 			}
+			logrus.Infoln(getLogHeader(), "=> 上传:", reply)
 			reply, err = ctx.Post(isnextreply, &MessagePost{
 				Content: " ",
 				Media:   &MessageMedia{FileInfo: reply.FileInfo},
@@ -260,6 +262,7 @@ func (ctx *Ctx) SendImage(file string, replytosender bool, caption ...any) (repl
 		if err != nil {
 			return
 		}
+		logrus.Infoln(getLogHeader(), "=> 上传:", reply)
 		post.Media = &MessageMedia{FileInfo: reply.FileInfo}
 	} else {
 		if strings.HasPrefix(file, "http") {

@@ -48,6 +48,7 @@ func (m *Message) String() string {
 	sb := strings.Builder{}
 	if m.Timestamp != nil {
 		sb.WriteString(m.Timestamp.Format(time.DateTime))
+		sb.WriteByte(' ')
 	}
 	if m.FileUUID != "" {
 		sb.WriteString("富媒体: ")
