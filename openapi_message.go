@@ -65,7 +65,6 @@ func (m *Message) String() string {
 			sb.WriteString(", URL: ")
 			sb.WriteString(u)
 		}
-		sb.WriteString(", URL: ")
 		return sb.String()
 	}
 	if m.SeqInChannel != "" {
